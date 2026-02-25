@@ -1,6 +1,6 @@
 spring:
  datasource:
-  url: jdbc:postgresql://localhost:5434/vjshow
+  url: jdbc:postgresql://localhost:5432/vjshow
   username: postgres
   password: 123456
  jpa:
@@ -10,6 +10,14 @@ spring:
   properties:
    hibernate:
     dialect: org.hibernate.dialect.PostgreSQLDialect
-  sql:
-   init:
-   mode: never
+    default-schema: public
+ security:
+   oauth2:
+    client:
+     registration:
+      google:
+       client-id: 1041269453688-1341q1go2rcmn3lkeqfk3jul81apd5fk.apps.googleusercontent.com
+       client-secret: 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
+       scope:
+        - email
+        - profile
