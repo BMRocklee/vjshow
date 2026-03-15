@@ -11,9 +11,11 @@ com\vjshow\marketplace\repository\UserRepository.class
 com\vjshow\marketplace\service\JwtService.class
 com\vjshow\marketplace\filter\JwtAuthenticationFilter.class
 com\vjshow\marketplace\dto\response\AuthResponse.class
+com\vjshow\marketplace\controller\UserMe.class
 com\vjshow\marketplace\enums\Role.class
 com\vjshow\marketplace\facade\AuthFacade.class
 com\vjshow\marketplace\service\JwtServiceImpl.class
 com\vjshow\marketplace\dto\response\AuthResponse$AuthResponseBuilder.class
 com\vjshow\marketplace\MarketplaceApplication.class
 com\vjshow\marketplace\service\UserService.class
+com\vjshow\marketplace\config\CorsConfig.class

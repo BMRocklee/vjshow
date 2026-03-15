@@ -1,5 +1,7 @@
+D:\vjshow\source\BE\vjshow\marketplace\src\main\java\com\vjshow\marketplace\config\CorsConfig.java
 D:\vjshow\source\BE\vjshow\marketplace\src\main\java\com\vjshow\marketplace\config\SecurityConfig.java
 D:\vjshow\source\BE\vjshow\marketplace\src\main\java\com\vjshow\marketplace\controller\UserController.java
+D:\vjshow\source\BE\vjshow\marketplace\src\main\java\com\vjshow\marketplace\controller\UserMe.java
 D:\vjshow\source\BE\vjshow\marketplace\src\main\java\com\vjshow\marketplace\dto\response\AuthResponse.java
 D:\vjshow\source\BE\vjshow\marketplace\src\main\java\com\vjshow\marketplace\entity\User.java
 D:\vjshow\source\BE\vjshow\marketplace\src\main\java\com\vjshow\marketplace\enums\AuthProviderEnum.java

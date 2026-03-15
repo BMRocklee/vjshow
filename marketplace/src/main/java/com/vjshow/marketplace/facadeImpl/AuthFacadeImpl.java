@@ -3,8 +3,10 @@ package com.vjshow.marketplace.facadeImpl;
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.dto.response.AuthResponse;
+import com.vjshow.marketplace.entity.User;
 import com.vjshow.marketplace.enums.AuthProviderEnum;
 import com.vjshow.marketplace.facade.AuthFacade;
+import com.vjshow.marketplace.service.JwtService;
 import com.vjshow.marketplace.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -13,18 +15,23 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthFacadeImpl implements AuthFacade {
 	
-//    private final JwtService jwtService;
+    private final JwtService jwtService;
 	
 	private final UserService userService;
 
 	@Override
-	public AuthResponse loginOAuth(String provider, String providerId, String email, String name, String picture) {
+	public AuthResponse loginOAuth(AuthProviderEnum provider, String providerId, String email, String name, String picture) {
 		// TODO Auto-generated method stub
-		AuthProviderEnum authProvider = AuthProviderEnum.valueOf(provider.toUpperCase());
-		
-//		UserService user = userService.findOrCreateOAuthUser(authProvider, providerId, email, name, picture);
-//        return jwtService.generateToken(user);
-		return null;
+		User user = userService.findOrCreateOAuthUser(provider, providerId, email, name, picture);
+		String accessToken = jwtService.generateAccessToken(user);
+
+	    long expiresIn = jwtService.getAccessTokenExpiration();
+
+	    return AuthResponse.builder()
+	            .accessToken(accessToken)
+	            .tokenType("Bearer")
+	            .expiresIn(expiresIn)
+	            .build();
 	}
 
 }

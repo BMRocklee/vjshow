@@ -60,4 +60,9 @@ public class JwtServiceImpl implements JwtService {
 			return false;
 		}
 	}
+	
+	@Override
+	public long getAccessTokenExpiration() {
+	    return EXPIRATION / 1000; // convert ms -> seconds
+	}
 }

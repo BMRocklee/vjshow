@@ -1,6 +1,7 @@
 package com.vjshow.marketplace.OAuth2;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -8,6 +9,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.dto.response.AuthResponse;
+import com.vjshow.marketplace.enums.AuthProviderEnum;
 import com.vjshow.marketplace.facade.AuthFacade;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,11 +29,33 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	) throws IOException {
 
-		OAuth2User user = (OAuth2User) authentication.getPrincipal();
+		OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+		
+		String uri = request.getRequestURI();
 
-		String provider = request.getRequestURI().contains("facebook") ? "FACEBOOK" : "GOOGLE";
+		AuthProviderEnum provider = AuthProviderEnum.GOOGLE;
 
-		String providerId = user.getAttribute("sub") != null ? user.getAttribute("sub") : user.getAttribute("id");
+		if (uri.contains("facebook")) provider = AuthProviderEnum.FACEBOOK;
+		if (uri.contains("zalo")) provider = AuthProviderEnum.ZALO;
+
+		String providerId = oauthUser.getAttribute("sub") != null ? oauthUser.getAttribute("sub") : oauthUser.getAttribute("id");
+		
+		String email = oauthUser.getAttribute("email");
+
+		if(email == null){
+		    email = providerId + "@facebook.com";
+		}
+		
+		String name = oauthUser.getAttribute("name");
+		
+		String picture;
+
+		if(provider.equals(AuthProviderEnum.FACEBOOK)){
+		    picture = "https://graph.facebook.com/" + providerId + "/picture?type=large";
+		}else{
+		    picture = oauthUser.getAttribute("picture");
+		}
+
 
 		AuthResponse authResponse = authFacade.loginOAuth(
 
@@ -39,35 +63,19 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 				providerId,
 
-				user.getAttribute("email"),
+				email,
 
-				user.getAttribute("name"),
+				name,
 
-				user.getAttribute("picture")
-
-		);
-
-		response.setContentType("application/json");
-
-		response.getWriter().write(
-
-				"""
-						{
-						 "accessToken": "%s",
-						 "tokenType": "%s",
-						 "expiresIn": %d
-						}
-						""".formatted(
-
-						authResponse.getAccessToken(),
-
-						authResponse.getTokenType(),
-
-						authResponse.getExpiresIn()
-
-				)
+				picture
 
 		);
+		
+		
+		String redirectUrl = "http://localhost:3000/?token=" 
+		        + authResponse.getAccessToken();
+
+		response.sendRedirect(redirectUrl);
 
 	}
 

@@ -21,3 +21,15 @@ spring:
        scope:
         - email
         - profile
+      facebook:
+       client-id: 2564719860596086
+       client-secret: d9c8a76434d1689e3ebcd1a4bee53eb8
+       scope:
+         - email
+         - public_profile
+     provider:
+      facebook:
+       authorization-uri: https://www.facebook.com/v17.0/dialog/oauth
+       token-uri: https://graph.facebook.com/v17.0/oauth/access_token
+       user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture
+       user-name-attribute: id

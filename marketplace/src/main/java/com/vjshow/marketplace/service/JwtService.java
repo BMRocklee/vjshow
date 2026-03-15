@@ -10,4 +10,6 @@ public interface JwtService {
 	public UUID extractUserId(String token);
 	
 	public boolean isValid(String token);
+	
+	public long getAccessTokenExpiration();
 }

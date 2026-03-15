@@ -52,7 +52,7 @@ public class User {
 	private UUID publicId;
 
 	// Email (login)
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String email;
 	
 	// Name
