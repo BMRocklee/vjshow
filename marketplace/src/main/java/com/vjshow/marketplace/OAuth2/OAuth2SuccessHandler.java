@@ -1,7 +1,6 @@
 package com.vjshow.marketplace.OAuth2;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
