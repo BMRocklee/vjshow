@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreatorStatsDTO {
-
     private long totalCreators;
-    private long pendingCreators;
+    private long totalApprovedCreators;
+    private long totalPendingCreators;
+    private long totalRejectCreators;
     private long totalRevenue;
     private long totalCommission;
 }
