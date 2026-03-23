@@ -44,7 +44,7 @@ public class CreatorServiceImpl implements CreatorService {
 	@Override
 	public void approve(Long creatorId) {
 		CreatorEntity creator = creatorRepository.findById(creatorId)
-				.orElseThrow(() -> new RuntimeException("Not found"));
+				.orElseThrow(() -> new LogicException("CREATOR_NOT_FOUND","không tìm thấy đối tác trong hệ thống"));
 
 		creator.setStatus(CreatorStatus.APPROVED);
 
@@ -57,11 +57,13 @@ public class CreatorServiceImpl implements CreatorService {
 
 	@Override
 	public void reject(Long id) {
-		CreatorEntity app = creatorRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy"));
+		CreatorEntity creator = creatorRepository.findById(id).orElseThrow(() -> new LogicException("CREATOR_NOT_FOUND","Không tìm thấy đối tác trong hệ thống"));
 
-		app.setStatus(CreatorStatus.REJECTED);
-		creatorRepository.save(app);
-
+		UserEntity user = creator.getUser();
+		user.setRole(Role.USER);
+		
+		creator.setStatus(CreatorStatus.REJECTED);
+		creatorRepository.save(creator);
 	}
 
 	@Override
