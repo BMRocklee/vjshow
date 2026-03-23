@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.vjshow.marketplace.entity.User;
+import com.vjshow.marketplace.entity.UserEntity;
 import com.vjshow.marketplace.repository.UserRepository;
 import com.vjshow.marketplace.service.JwtService;
 
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		
 		 UUID userId = jwtService.extractUserId(token);
 
-	        User user = userRepository.findByPublicId(userId).orElse(null);
+	        UserEntity user = userRepository.findByPublicId(userId).orElse(null);
 
 	        if (user != null) {
 

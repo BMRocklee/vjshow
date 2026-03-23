@@ -33,3 +33,9 @@ spring:
        token-uri: https://graph.facebook.com/v17.0/oauth/access_token
        user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture
        user-name-attribute: id
+
+ logging:
+   level:
+     org.hibernate.SQL: DEBUG
+     org.hibernate.orm.jdbc.bind: TRACE
+     org.springframework.orm.jpa: DEBUG

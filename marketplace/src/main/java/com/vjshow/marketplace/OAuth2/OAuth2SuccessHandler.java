@@ -68,12 +68,57 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		return email;
 	}
 
+	@SuppressWarnings("unchecked")
 	private String getPicture(AuthProviderEnum provider, Map<String, Object> attr, String providerId) {
+		if (provider == null) {
+			throw new RuntimeException("Provider is null");
+		}
+
 		return switch (provider) {
-		case FACEBOOK -> "https://graph.facebook.com/" + providerId + "/picture?type=large";
-		case GOOGLE -> (String) attr.get("picture");
-		case ZALO -> (String) attr.get("picture"); // tùy API zalo
-		default -> throw new RuntimeException("Unsupported provider");
+		case FACEBOOK -> {
+			if (providerId != null && !providerId.isBlank()) {
+				yield "https://graph.facebook.com/" + providerId + "/picture?type=large";
+			}
+
+			// fallback nếu có data từ attr
+			Map<String, Object> picture = (Map<String, Object>) attr.get("picture");
+			if (picture != null) {
+				Map<String, Object> data = (Map<String, Object>) picture.get("data");
+				if (data != null && data.get("url") != null) {
+					yield data.get("url").toString();
+				}
+			}
+
+			yield null;
+		}
+
+		case GOOGLE -> {
+			Object url = attr.get("picture");
+			yield url != null ? url.toString() : null;
+		}
+
+		case ZALO -> {
+			// Zalo thường nested kiểu: picture -> data -> url (tuỳ version API)
+			Map<String, Object> picture = (Map<String, Object>) attr.get("picture");
+			if (picture != null) {
+				Object data = picture.get("data");
+
+				if (data instanceof Map) {
+					Object url = ((Map<?, ?>) data).get("url");
+					if (url != null)
+						yield url.toString();
+				}
+
+				// fallback nếu API trả thẳng url
+				if (data instanceof String) {
+					yield data.toString();
+				}
+			}
+
+			yield null;
+		}
+
+		default -> throw new RuntimeException("Unsupported provider: " + provider);
 		};
 	}
 }

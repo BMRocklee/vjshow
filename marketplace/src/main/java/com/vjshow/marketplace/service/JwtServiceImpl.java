@@ -7,7 +7,7 @@ import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Component;
 
-import com.vjshow.marketplace.entity.User;
+import com.vjshow.marketplace.entity.UserEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,7 +23,7 @@ public class JwtServiceImpl implements JwtService {
 	private SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
 	
 	@Override
-	public String generateAccessToken(User user) {
+	public String generateAccessToken(UserEntity user) {
 
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + EXPIRATION);
