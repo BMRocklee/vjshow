@@ -22,4 +22,8 @@ public interface CreatorRepository  extends JpaRepository<CreatorEntity, Long> {
     List<CreatorEntity> findByStatus(CreatorStatus status);
 
     long countByStatus(CreatorStatus status);
+
+	List<CreatorEntity> findByStatusAndUser_NameContainingIgnoreCase(CreatorStatus status, String keyword);
+
+	List<CreatorEntity> findByUser_NameContainingIgnoreCase(String keyword);
 }
