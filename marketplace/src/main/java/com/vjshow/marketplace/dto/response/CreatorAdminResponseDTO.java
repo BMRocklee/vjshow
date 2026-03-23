@@ -8,13 +8,11 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CreatorAdminResponseDTO {
-	private Long CreatorId;
+	private Long id;
 	private String username;
 	private String avatar;
 	private String uid;
-	private int totalProducts;
-	private long revenue;
-	private long commission;
+	private String phone;
+	private String company;
 	private String status;
-
 }
