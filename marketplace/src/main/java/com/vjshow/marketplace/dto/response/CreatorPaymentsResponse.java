@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class CreatorDashboardResponse {
+public class CreatorPaymentsResponse {
 	
 	  private CreatorStatsDTO stats;
-	  private List<CreatorAdminDTO> creators;
+	  private List<CreatorPaymentInfoDTO> creators;
 }
