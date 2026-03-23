@@ -7,6 +7,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import com.vjshow.marketplace.enums.AuthProviderEnum;
 import com.vjshow.marketplace.enums.Role;
+import com.vjshow.marketplace.enums.UserStatusEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,6 +73,9 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
     
+    @Enumerated(EnumType.STRING)
+    private UserStatusEnum status;
+    
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -84,6 +88,9 @@ public class UserEntity {
 
         if (role == null)
             role = Role.USER;
+        
+        if(status == null) 
+        	status = UserStatusEnum.ACTIVE;
     }
     
     @PreUpdate
