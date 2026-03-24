@@ -43,9 +43,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String token = header.substring(7);
 
 		if (!jwtService.isValid(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+		    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		    response.getWriter().write("INVALID_OR_EXPIRED_TOKEN");
+		    return;
+		}
 		
 		 UUID userId = jwtService.extractUserId(token);
 
@@ -62,8 +63,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	            SecurityContextHolder.getContext().setAuthentication(auth);
 	        }
-
-		
 
 		filterChain.doFilter(request, response);
 	}
