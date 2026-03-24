@@ -73,6 +73,7 @@ public class ProductEntity {
 
 	private LocalDateTime createdAt;
 	
+	
 	@PrePersist
 	public void prePersist() {
 	    createdAt = LocalDateTime.now();

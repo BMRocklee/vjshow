@@ -1,15 +1,5 @@
 package com.vjshow.marketplace.facade;
 
-import com.vjshow.marketplace.dto.response.CreatorDashboardResponse;
-import com.vjshow.marketplace.dto.response.AdminDashboardResponseDto;
-
-public interface AdminFacade {
-  public AdminDashboardResponseDto getAdminDashboardStatInfo();
-
-  public CreatorDashboardResponse getCreatorDashboard(); 
-}
-package com.vjshow.marketplace.facade;
-
 import com.vjshow.marketplace.dto.response.AdminDashboardResponseDto;
 import com.vjshow.marketplace.dto.response.CreatorPaymentsResponse;
 import com.vjshow.marketplace.dto.response.CreatorRegisterInfoResponse;
