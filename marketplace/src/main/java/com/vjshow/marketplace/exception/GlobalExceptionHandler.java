@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.vjshow.marketplace.dto.response.ErrorResponseDto;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
+	
 	@ExceptionHandler(LogicException.class)
 	public ResponseEntity<ErrorResponseDto> handleLogicException(LogicException ex) {
 
@@ -20,6 +23,8 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponseDto> handleException(Exception ex) {
+		
+		log.error("❌ INTERNAL ERROR", ex); // 🔥 log full stack trace
 
 		ErrorResponseDto res = ErrorResponseDto.builder().code("INTERNAL_ERROR").message("Có lỗi xảy ra")
 				.timestamp(System.currentTimeMillis()).build();
