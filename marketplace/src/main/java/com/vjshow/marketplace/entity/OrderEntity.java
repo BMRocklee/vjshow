@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,6 +47,10 @@ public class OrderEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private ProductEntity product;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id")
+    private PaymentEntity payment;
 
     private Long amount; // giá
 
@@ -57,4 +62,14 @@ public class OrderEntity {
     private String paymentMethod; // VNPAY / MOMO / STRIPE
 
     private LocalDateTime createdAt;
+    
+    private LocalDateTime paidAt;
+    
+ // 🔥 cực kỳ quan trọng
+    private LocalDateTime downloadExpiredAt;
+    
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
 }
