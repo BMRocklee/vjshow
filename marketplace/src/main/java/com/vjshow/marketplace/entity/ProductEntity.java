@@ -73,6 +73,15 @@ public class ProductEntity {
 
 	private LocalDateTime createdAt;
 	
+	private Long width;
+	
+	private Long height;
+	
+	private Long duration;
+	
+	private String format;
+	
+	private Long size;
 	
 	@PrePersist
 	public void prePersist() {

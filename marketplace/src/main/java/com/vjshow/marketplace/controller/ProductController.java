@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vjshow.marketplace.dto.request.HandleFileDoneRequest;
 import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.ProductStatusEnum;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
@@ -80,16 +80,20 @@ public class ProductController {
 	}
 
 	@PostMapping("/done")
-	public void done(@RequestBody Map<String, String> body) {
-
-		String fileKey = body.get("fileKey");
+	public void done(@RequestBody HandleFileDoneRequest fileInfo) {
+		String fileKey = fileInfo.getFileKey();
 
 		ProductEntity product = productRepository.findByFileKey(fileKey);
 
-		String preview = body.get("previewUrl");
+		String preview = fileInfo.getPreviewUrl();
 		preview = preview.replace("uploads/", "").replace("uploads\\", "").replace("\\", "/");
-
 		product.setPreviewUrl("http://localhost:8080/files/" + preview);
+		product.setWidth(fileInfo.getWidth());
+		product.setHeight(fileInfo.getHeight());
+		product.setDuration(fileInfo.getDuration());
+		product.setFormat(fileInfo.getFormat());
+		product.setSize(fileInfo.getSize());
+		
 		product.setStatus(ProductStatusEnum.DONE);
 		productRepository.save(product);
 	}

@@ -18,35 +18,31 @@ const worker = new Worker(
   'media',
   async (job) => {
     try {
-      console.log('👉 Processing:', job.name)
-      console.log('📦 Data:', job.data)
-
-      let previewPath = null
-
-      // 🎥 VIDEO
-      if (job.name === 'VIDEO') {
-        previewPath = await processVideo(job.data)
-
-        console.log('📡 Calling BE DONE (VIDEO)...')
+      let payload = {
+        fileKey: job.data.url,
+        type: job.name
       }
 
-      // 🖼 IMAGE
       if (job.name === 'IMAGE') {
-        previewPath = await processImage(job.data)
+        const result = await processImage(job.data)
 
-        console.log('📡 Calling BE DONE (IMAGE)...')
+        payload = { ...payload, ...result }
       }
 
-      // 🔥 gọi BE (chung cho cả 2 loại)
-      const res = await axios.post(
+      if (job.name === 'VIDEO') {
+        const result = await processVideo(job.data)
+
+        payload = { ...payload, ...result }
+      }
+
+      console.log('📤 Payload gửi BE:', payload)
+
+      await axios.post(
         'http://localhost:8080/api/products/done',
-        {
-          fileKey: job.data.url,        // relative path
-          previewUrl: previewPath       // 🔥 path mới sau xử lý
-        }
+        payload
       )
 
-      console.log('✅ DONE API CALLED:', res.status)
+      console.log('✅ DONE API CALLED')
 
     } catch (err) {
       console.error('❌ WORKER ERROR:', err.message)
