@@ -1,0 +1,21 @@
+docker : docker run -d -p 6379:6379 --name redis redis
+status : docker ps -a
+start: docker start redis
+
+Test lại Redis
+docker exec -it redis redis-cli
+ping
+
+=> Pong (ok)
+
+
+
+-------------
+server worker
+
+cd vjshow (trỏ đến vjshow)
+mkdir worker
+cd worker
+npm init -y
+npm install express bullmq ioredis axios sharp fluent-ffmpeg ffmpeg-static
+
