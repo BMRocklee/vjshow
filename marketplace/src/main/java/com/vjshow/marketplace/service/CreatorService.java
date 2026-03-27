@@ -21,4 +21,10 @@ public interface CreatorService {
 	List<CreatorEntity> findByStatus(CreatorStatus status);
 
     long countByStatus(CreatorStatus status);
+
+	CreatorEntity getByUserId(Long userId);
+
+    void checkQuota(CreatorEntity creator, Long fileSize);
+
+    void increaseStorage(CreatorEntity creator, Long fileSize);
 }
