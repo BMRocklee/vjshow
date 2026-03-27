@@ -10,6 +10,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Configuration
 public class R2Config {
@@ -32,4 +33,16 @@ public class R2Config {
                 .forcePathStyle(true)
                 .build();
     }	
+    
+    @Bean
+    public S3Presigner s3Presigner() {
+
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
+
+        return S3Presigner.builder()
+                .endpointOverride(URI.create(endpoint)) // 🔥 bắt buộc với R2
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .region(Region.of("auto")) // R2 dùng auto
+                .build();
+    }
 }
