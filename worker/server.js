@@ -5,31 +5,37 @@ import IORedis from 'ioredis'
 const app = express()
 app.use(express.json())
 
-// connect Redis
+// Redis connection
 const connection = new IORedis({
   host: '127.0.0.1',
   port: 6379,
   maxRetriesPerRequest: null
 })
 
-// tạo queue
+// Queue
 const queue = new Queue('media', { connection })
 
-// API push job VIDEO
-app.post('/queue/video', async (req, res) => {
-  await queue.add('VIDEO', req.body)
-  console.log('📩 Received VIDEO job')
-  res.send('ok')
+// Unified API
+app.post('/queue/job', async (req, res) => {
+  const { key, type } = req.body
+
+  if (!key || !type) {
+    return res.status(400).json({ error: 'Missing key or type' })
+  }
+
+  await queue.add(type, { key }, {
+    attempts: 3,
+    backoff: {
+      type: 'exponential',
+      delay: 2000
+    }
+  })
+
+  console.log(`📩 Job received: ${type} - ${key}`)
+
+  res.json({ status: 'queued' })
 })
 
-// API push job IMAGE
-app.post('/queue/image', async (req, res) => {
-  await queue.add('IMAGE', req.body)
-  console.log('📩 Received IMAGE job')
-  res.send('ok')
-})
-
-// start server
 app.listen(3001, () => {
   console.log('🚀 Worker API running at http://localhost:3001')
 })
