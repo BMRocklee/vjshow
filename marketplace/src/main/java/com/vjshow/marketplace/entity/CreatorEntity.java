@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,29 +29,44 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreatorEntity {
-	
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String name;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private UserEntity user;
 
-    private String email;
+	private String name;
 
-    private String phone;
+	private String email;
 
-    private String type;
+	private String phone;
 
-    private String company;
+	private String type;
 
-    @Enumerated(EnumType.STRING)
-    private CreatorStatus status;
+	private String company;
 
-    private LocalDateTime createdAt;
+	private Long uploadLimit;
 
-    private LocalDateTime reviewedAt;
+	private Long usedStorage;
+
+	@Enumerated(EnumType.STRING)
+	private CreatorStatus status;
+
+	private LocalDateTime createdAt;
+
+	private LocalDateTime reviewedAt;
+
+	@PrePersist
+	public void prePersist() {
+		if (this.uploadLimit == null) {
+			this.uploadLimit = 5 * 1024 * 1024 * 1024L;
+		}
+		
+		if (this.usedStorage == null) {
+			this.usedStorage = 0L;
+		}
+	}
 }
