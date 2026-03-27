@@ -81,4 +81,24 @@ public class CreatorServiceImpl implements CreatorService {
 		// TODO Auto-generated method stub
 		return creatorRepository.countByStatus(status);
 	}
+
+		
+	 @Override
+	    public CreatorEntity getByUserId(Long userId) {
+	        return creatorRepository.findByUserId(userId)
+	                .orElseThrow(() -> new LogicException("NOT_FOUBD","Không tìm thấy Creator từ User"));
+	    }
+
+	    @Override
+	    public void checkQuota(CreatorEntity creator, Long fileSize) {
+	        if (creator.getUsedStorage() + fileSize > creator.getUploadLimit()) {
+	            throw new LogicException("LIMIT_EXCEED","Vượt quá giới hạn upload. Bạn cần nâng cấp dung lượng lưu trữ");
+	        }
+	    }
+
+	    @Override
+	    public void increaseStorage(CreatorEntity creator, Long fileSize) {
+	        creator.setUsedStorage(creator.getUsedStorage() + fileSize);
+	        creatorRepository.save(creator);
+	    }
 }
