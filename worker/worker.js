@@ -1,10 +1,11 @@
 import { Worker } from 'bullmq'
 import IORedis from 'ioredis'
 import axios from 'axios'
-import { processVideo } from './video.js'
 import { processImage } from './image.js'
+import { processVideo } from './video.js'
+import 'dotenv/config'
 
-// 🔌 Redis connection
+// Redis
 const connection = new IORedis({
   host: '127.0.0.1',
   port: 6379,
@@ -13,48 +14,49 @@ const connection = new IORedis({
 
 console.log('🚀 Worker started...')
 
-// 🎯 MAIN WORKER
 const worker = new Worker(
   'media',
   async (job) => {
+    const { key } = job.data
+    const type = job.name
+
     try {
-      let payload = {
-        fileKey: job.data.url,
-        type: job.name
+      let result = {}
+
+      if (type === 'IMAGE') {
+        result = await processImage({ key })
       }
 
-      if (job.name === 'IMAGE') {
-        const result = await processImage(job.data)
-
-        payload = { ...payload, ...result }
+      if (type === 'VIDEO') {
+        result = await processVideo({ key })
       }
 
-      if (job.name === 'VIDEO') {
-        const result = await processVideo(job.data)
-
-        payload = { ...payload, ...result }
+      const payload = {
+        fileKey: key,
+        type,
+        ...result
       }
 
-      console.log('📤 Payload gửi BE:', payload)
+      console.log('📤 Callback payload:', payload)
 
       await axios.post(
         'http://localhost:8080/api/products/done',
         payload
       )
 
-      console.log('✅ DONE API CALLED')
-
     } catch (err) {
-      console.error('❌ WORKER ERROR:', err.message)
+      console.error('❌ WORKER ERROR:', err)
       throw err
     }
   },
-  { connection }
+  {
+    connection,
+    concurrency: 5
+  }
 )
 
-// 📊 EVENTS
 worker.on('completed', (job) => {
-  console.log(`🎉 Job completed: ${job.name}`)
+  console.log(`🎉 Job done: ${job.name}`)
 })
 
 worker.on('failed', (job, err) => {
