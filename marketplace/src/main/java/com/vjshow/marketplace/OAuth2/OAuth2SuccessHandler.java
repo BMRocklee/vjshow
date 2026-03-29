@@ -44,7 +44,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 		AuthResponse authResponse = authFacade.loginOAuth(provider, providerId, email, name, picture);
 
-		String redirectUrl = "http://localhost:3000/?token=" + authResponse.getAccessToken();
+		String redirectUrl = "https://vjshow.vn/?token=" + authResponse.getAccessToken();
 
 		response.sendRedirect(redirectUrl);
 	}
