@@ -32,7 +32,7 @@ public class SecurityConfig {
 				)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(
-								"/oauth2/**", "/auth/**", "/api/admin/**", "/api/products/**", "/files/**", "/api/webhook/**"
+								"/oauth2/**", "/auth/**", "/api/admin/**", "/api/products/**", "/files/**", "/api/webhook/**", "/api/data-deletion"
 						).permitAll()
 						.anyRequest()
 						.authenticated()
