@@ -1,5 +1,4 @@
 com\vjshow\marketplace\controller\UserController.class
-com\vjshow\marketplace\dto\request\HandleFileDoneRequest$HandleFileDoneRequestBuilder.class
 com\vjshow\marketplace\dto\response\CreatorRegisterInfoResponse.class
 com\vjshow\marketplace\service\WebhookService.class
 com\vjshow\marketplace\enums\ProductStatusEnum.class
@@ -7,6 +6,7 @@ com\vjshow\marketplace\facade\UserMeFacadeImpl.class
 com\vjshow\marketplace\OAuth2\OAuth2SuccessHandler$1.class
 com\vjshow\marketplace\enums\OrderStatusEnum.class
 com\vjshow\marketplace\service\JwtService.class
+com\vjshow\marketplace\storage\CloudFlareService.class
 com\vjshow\marketplace\dto\response\CreatorStatsDTO.class
 com\vjshow\marketplace\enums\Role.class
 com\vjshow\marketplace\facade\CreatorFacadeImpl.class
@@ -14,8 +14,10 @@ com\vjshow\marketplace\repository\OrderRepository.class
 com\vjshow\marketplace\dto\response\UserMeResponseDto$UserMeResponseDtoBuilder.class
 com\vjshow\marketplace\dto\response\CreatorAdminResponseDTO.class
 com\vjshow\marketplace\exception\GlobalExceptionHandler.class
+com\vjshow\marketplace\config\R2Config.class
 com\vjshow\marketplace\dto\response\CreatorStatsDTO$CreatorStatsDTOBuilder.class
 com\vjshow\marketplace\entity\CreatorEntity.class
+com\vjshow\marketplace\dto\request\CompleteUploadRequest.class
 com\vjshow\marketplace\dto\response\CreatorPaymentInfoDTO$CreatorPaymentInfoDTOBuilder.class
 com\vjshow\marketplace\dto\response\AdminDashboardResponseDto$AdminDashboardResponseDtoBuilder.class
 com\vjshow\marketplace\dto\response\CreatorPaymentsResponse.class
@@ -48,14 +50,17 @@ com\vjshow\marketplace\service\ProductService.class
 com\vjshow\marketplace\dto\response\CreatorPaymentInfoDTO.class
 com\vjshow\marketplace\dto\response\CreatorAdminDTO$CreatorAdminDTOBuilder.class
 com\vjshow\marketplace\service\CreatorService.class
+com\vjshow\marketplace\dto\response\UploadResponse$UploadResponseBuilder.class
 com\vjshow\marketplace\dto\response\CreatorRegisterInfoResponse$CreatorRegisterInfoResponseBuilder.class
 com\vjshow\marketplace\entity\PaymentEntity$PaymentEntityBuilder.class
 com\vjshow\marketplace\dto\response\CreatorsRegisterResponse$CreatorsRegisterResponseBuilder.class
+com\vjshow\marketplace\dto\response\UploadResponse.class
 com\vjshow\marketplace\dto\request\CreatorApplyRequestDTO$CreatorApplyRequest.class
 com\vjshow\marketplace\dto\response\UserMeResponseDto.class
 com\vjshow\marketplace\controller\UserMeController.class
 com\vjshow\marketplace\dto\request\CreateOrderRequestDto.class
 com\vjshow\marketplace\service\UserServiceImpl.class
+com\vjshow\marketplace\controller\FileController.class
 com\vjshow\marketplace\entity\UserEntity$UserEntityBuilder.class
 com\vjshow\marketplace\service\OrderServiceImpl.class
 com\vjshow\marketplace\config\StaticConfig.class
@@ -66,6 +71,7 @@ com\vjshow\marketplace\dto\response\CreatorPaymentsResponse$CreatorPaymentsRespo
 com\vjshow\marketplace\service\CreatorServiceImpl.class
 com\vjshow\marketplace\OAuth2\OAuth2SuccessHandler.class
 com\vjshow\marketplace\dto\response\AdminDashboardResponseDto.class
+com\vjshow\marketplace\service\ProductServiceImpl.class
 com\vjshow\marketplace\dto\response\CreatorsRegisterResponse.class
 com\vjshow\marketplace\facade\AdminFacadeImpl.class
 com\vjshow\marketplace\entity\OrderEntity.class
@@ -82,12 +88,14 @@ com\vjshow\marketplace\facade\OrderFacadeImpl.class
 com\vjshow\marketplace\config\SecurityConfig.class
 com\vjshow\marketplace\controller\OrderController.class
 com\vjshow\marketplace\enums\CreatorStatus.class
+com\vjshow\marketplace\facade\UploadFacade.class
 com\vjshow\marketplace\dto\request\CreateOrderRequestDto$CreateOrderRequestDtoBuilder.class
 com\vjshow\marketplace\entity\ProductEntity$ProductEntityBuilder.class
 com\vjshow\marketplace\service\UserService.class
 com\vjshow\marketplace\dto\response\ErrorResponseDto$ErrorResponseDtoBuilder.class
 com\vjshow\marketplace\entity\ProductEntity.class
 com\vjshow\marketplace\enums\UserStatusEnum.class
+com\vjshow\marketplace\facade\UploadFacadeImpl.class
 com\vjshow\marketplace\service\PaymentGatewayService.class
 com\vjshow\marketplace\enums\PaymentStatusEnum.class
 com\vjshow\marketplace\dto\request\CassoWebhookDto$CassoTransaction.class
@@ -101,4 +109,6 @@ com\vjshow\marketplace\entity\UserEntity.class
 com\vjshow\marketplace\service\WebhookServiceImpl.class
 com\vjshow\marketplace\dto\response\CommonResponseDto.class
 com\vjshow\marketplace\MarketplaceApplication.class
+com\vjshow\marketplace\controller\TestController.class
 com\vjshow\marketplace\dto\response\UserAdminDTO$UserAdminDTOBuilder.class
+com\vjshow\marketplace\dto\request\CompleteUploadRequest$CompleteUploadRequestBuilder.class
