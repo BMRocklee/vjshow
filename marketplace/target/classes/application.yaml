@@ -21,6 +21,7 @@ spring:
        scope:
         - email
         - profile
+       redirect-uri: https://vjshow.vn/login/oauth2/code/google
       facebook:
        client-id: 2564719860596086
        client-secret: d9c8a76434d1689e3ebcd1a4bee53eb8
@@ -38,7 +39,7 @@ spring:
    max-file-size: 500MB
    max-request-size: 500MB
 server:
-  forward-headers-strategy: framework
+  forward-headers-strategy: native
 storage:
   r2:
     access-key: 7476a0b5b996b0246f2b0f1fb2d3eeb8
