@@ -50,7 +50,7 @@ storage:
     bucket: vjshow
     public-url: https://pub-2fc83ef40b8e48f88139142d2dc15bda.r2.dev
 worker:
-  url: http://worker:3001/queue/job
+  url: http://worker:3001
   #url: http://localhost:3001
 logging:
    level:
