@@ -7,7 +7,8 @@ app.use(express.json())
 
 // Redis connection
 const connection = new IORedis({
-  host: '127.0.0.1',
+  // host: '127.0.0.1',
+  host: 'redis',
   port: 6379,
   maxRetriesPerRequest: null
 })
@@ -28,7 +29,8 @@ app.post('/queue/job', async (req, res) => {
     backoff: {
       type: 'exponential',
       delay: 2000
-    }
+    },
+    removeOnComplete: true
   })
 
   console.log(`📩 Job received: ${type} - ${key}`)
@@ -37,5 +39,5 @@ app.post('/queue/job', async (req, res) => {
 })
 
 app.listen(3001, () => {
-  console.log('🚀 Worker API running at http://localhost:3001')
+  console.log('🚀 Queue API running on port 3001')
 })

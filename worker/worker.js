@@ -3,11 +3,11 @@ import IORedis from 'ioredis'
 import axios from 'axios'
 import { processImage } from './image.js'
 import { processVideo } from './video.js'
-import 'dotenv/config'
 
 // Redis
 const connection = new IORedis({
-  host: '127.0.0.1',
+  // host: '127.0.0.1',
+  host: 'redis',
   port: 6379,
   maxRetriesPerRequest: null
 })
@@ -40,7 +40,8 @@ const worker = new Worker(
       console.log('📤 Callback payload:', payload)
 
       await axios.post(
-        'http://localhost:8080/api/products/done',
+        // 'http://localhost:8080/api/products/done',
+        'http://be:8080/api/products/done',
         payload
       )
 
