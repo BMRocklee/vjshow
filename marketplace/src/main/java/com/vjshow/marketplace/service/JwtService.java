@@ -12,4 +12,6 @@ public interface JwtService {
 	public boolean isValid(String token);
 	
 	public long getAccessTokenExpiration();
+
+	public String extractRole(String token);
 }

@@ -10,8 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.vjshow.marketplace.entity.UserEntity;
-import com.vjshow.marketplace.repository.UserRepository;
 import com.vjshow.marketplace.service.JwtService;
 
 import jakarta.servlet.FilterChain;
@@ -25,46 +23,49 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
-    private final UserRepository userRepository;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		String header = request.getHeader("Authorization");
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   FilterChain filterChain)
+            throws ServletException, IOException {
 
-		if (header == null || !header.startsWith("Bearer ")) {
+        String header = request.getHeader("Authorization");
 
-			filterChain.doFilter(request, response);
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-			return;
+        String token = header.substring(7);
 
-		}
+        try {
+            if (!jwtService.isValid(token)) {
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
 
-		String token = header.substring(7);
+            UUID userId = jwtService.extractUserId(token);
+            String role = jwtService.extractRole(token);
 
-		if (!jwtService.isValid(token)) {
-		    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		    response.getWriter().write("INVALID_OR_EXPIRED_TOKEN");
-		    return;
-		}
-		
-		 UUID userId = jwtService.extractUserId(token);
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                userId,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                        );
 
-	        UserEntity user = userRepository.findByPublicId(userId).orElse(null);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
 
-	        if (user != null) {
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
-	            UsernamePasswordAuthenticationToken auth =
-	                    new UsernamePasswordAuthenticationToken(
-	                            user,
-	                            null,
-	                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-	                    );
-
-	            SecurityContextHolder.getContext().setAuthentication(auth);
-	        }
-
-		filterChain.doFilter(request, response);
-	}
-
+        filterChain.doFilter(request, response);
+    }
 }

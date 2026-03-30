@@ -8,6 +8,7 @@ import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.entity.UserEntity;
+import com.vjshow.marketplace.exception.LogicException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -64,5 +65,14 @@ public class JwtServiceImpl implements JwtService {
 	@Override
 	public long getAccessTokenExpiration() {
 	    return EXPIRATION / 1000; // convert ms -> seconds
+	}
+
+	@Override
+	public String extractRole(String token) {
+		 String role = parse(token).get("role", String.class);
+	        if (role == null) {
+	            throw new LogicException("ROLE_ERROR","Role của bạn không có quyền vào trang này");
+	        }
+	        return role;
 	}
 }
