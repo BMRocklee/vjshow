@@ -32,8 +32,6 @@ public class SecurityConfig {
 
 	private final OAuth2SuccessHandler successHandler;
 
-	private final UserRepository userRepository;
-
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
@@ -72,8 +70,9 @@ public class SecurityConfig {
 				.authorizeHttpRequests(
 						auth -> auth
 								.requestMatchers("/oauth2/**", "/auth/**", "/api/products/**", "/files/**",
-										"/api/webhook/**", "/api/data-deletion")
-								.permitAll().anyRequest().authenticated())
+										"/api/webhook/**", "/api/data-deletion").permitAll()
+								.requestMatchers("/admin/**").hasRole("ADMIN")
+								.anyRequest().authenticated())
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(
 						(req, res, ex2) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
 				.oauth2Login(oauth -> oauth.successHandler(successHandler))
