@@ -23,6 +23,7 @@ spring:
         - email
         - profile
        redirect-uri: https://vjshow.vn/login/oauth2/code/google
+       #redirect-uri: http://localhost:8080/login/oauth2/code/google
       facebook:
        client-id: 2564719860596086
        client-secret: d9c8a76434d1689e3ebcd1a4bee53eb8
