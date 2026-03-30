@@ -41,7 +41,7 @@ const worker = new Worker(
 
       await axios.post(
         // 'http://localhost:8080/api/products/done',
-        'http://be:8080/api/products/done',
+        'http://backend:8080/api/products/done',
         payload
       )
 
