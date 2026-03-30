@@ -14,5 +14,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 	List<ProductEntity> findByNameContainingIgnoreCase(String keyword);
 
 	List<ProductEntity> findByTypeAndNameContainingIgnoreCase(ProductTypeEnum valueOf, String keyword);
+	
+	List<ProductEntity> findByCreatorIdOrderByCreatedAtDesc(Long creatorId);
 
 }
