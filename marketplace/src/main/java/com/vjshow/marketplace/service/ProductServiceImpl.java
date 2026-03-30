@@ -1,8 +1,11 @@
 package com.vjshow.marketplace.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.dto.request.CompleteUploadRequest;
+import com.vjshow.marketplace.dto.request.ProductRequest;
 import com.vjshow.marketplace.entity.CreatorEntity;
 import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.ProductStatusEnum;
@@ -15,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 	
 	private final ProductRepository productRepository;
 
@@ -35,8 +38,33 @@ public class ProductServiceImpl implements ProductService{
 	                .duration(request.getDuration())
 	                .creator(creator)
 	                .format(request.getContentType())
+	                .size(request.getFileSize())
 	                .build();
 		 
 		 return productRepository.save(product);
+	}
+
+	@Override
+	public List<ProductEntity> getByCreatorId(Long creatorId) {
+		return productRepository
+                .findByCreatorIdOrderByCreatedAtDesc(creatorId);
+	}
+
+	@Override
+	public ProductEntity update(Long id, ProductRequest request) {
+		ProductEntity product = productRepository.findById(id)
+                .orElseThrow(() -> new LogicException("NOT_FOUND","Không tìm thấy sản phẩm"));
+
+        product.setName(request.getName());
+        product.setPrice(request.getPrice());
+
+        return productRepository.save(product);
+	}
+
+	@Override
+	public void delete(Long id) {
+		ProductEntity product = productRepository.findById(id)
+                .orElseThrow(() -> new LogicException("NOT_FOUND","Không tìm thấy sản phẩm"));
+		productRepository.delete(product);
 	}
 }
