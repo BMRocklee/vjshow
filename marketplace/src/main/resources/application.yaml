@@ -1,7 +1,7 @@
 spring:
  datasource:
   url: jdbc:postgresql://postgres:5432/vjshow
-  #url: jdbc:postgresql://localhost:5434/vjshow
+  #url: jdbc:postgresql://localhost:5432/vjshow
   username: postgres
   password: 123456
  jpa:
@@ -50,8 +50,8 @@ storage:
     bucket: vjshow
     public-url: https://pub-2fc83ef40b8e48f88139142d2dc15bda.r2.dev
 worker:
-  #url: https://worker.vjshow.vn
-  url: http://localhost:3001
+  url: http://worker:3001/queue/job
+  #url: http://localhost:3001
 logging:
    level:
      org.hibernate.SQL: DEBUG
