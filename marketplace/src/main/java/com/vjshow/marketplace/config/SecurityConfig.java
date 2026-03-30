@@ -71,7 +71,7 @@ public class SecurityConfig {
 						auth -> auth
 								.requestMatchers("/oauth2/**", "/api/auth/**", "/api/products/**", "/files/**",
 										"/api/webhook/**", "/api/data-deletion").permitAll()
-								.requestMatchers("/admin/**").hasRole("ADMIN")
+								.requestMatchers("/api/admin/**").hasRole("ADMIN")
 								.anyRequest().authenticated())
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(
 						(req, res, ex2) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
