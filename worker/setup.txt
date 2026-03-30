@@ -17,5 +17,13 @@ cd vjshow (trỏ đến vjshow)
 mkdir worker
 cd worker
 npm init -y
-npm install express bullmq ioredis axios sharp fluent-ffmpeg ffmpeg-static
+npm install express bullmq ioredis axios sharp fluent-ffmpeg ffmpeg-static ffprobe-static dotenv
+npm install @aws-sdk/client-s3
+npm install @aws-sdk/lib-storage
+npm install @aws-sdk/s3-request-presigner
+npm install @aws-sdk/node-http-handler
 
+
+----------------
+run 
+node --use-system-ca worker.js
