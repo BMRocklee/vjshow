@@ -16,7 +16,6 @@ import com.vjshow.marketplace.enums.ProductStatusEnum;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
 import com.vjshow.marketplace.exception.LogicException;
 import com.vjshow.marketplace.repository.ProductRepository;
-import com.vjshow.marketplace.service.WorkerService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,8 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductController {
 
-	private final WorkerService workerService;
-//
 	private final ProductRepository productRepository;
 	
 	@GetMapping
@@ -56,8 +53,6 @@ public class ProductController {
 		product.setWidth(fileInfo.getWidth());
 		product.setHeight(fileInfo.getHeight());
 		product.setDuration(fileInfo.getDuration());
-		product.setFormat(fileInfo.getFormat());
-		product.setSize(fileInfo.getSize());
 		
 		product.setStatus(ProductStatusEnum.DONE);
 		productRepository.save(product);
