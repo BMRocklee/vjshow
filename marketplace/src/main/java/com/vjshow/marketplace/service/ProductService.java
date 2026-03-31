@@ -18,4 +18,6 @@ public interface ProductService {
 	public ProductEntity update(Long id, ProductRequest request);
     
 	public void delete(Long id);
+	
+    List<ProductEntity> getPublicProducts(String type, String keyword);
 }
