@@ -23,7 +23,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public Optional<PaymentEntity> findByContent(String content) {
 		// TODO Auto-generated method stub
-		return paymentRepo.findbyContent(content);
+		return paymentRepo.findByContent(content);
 	}
 
 }
