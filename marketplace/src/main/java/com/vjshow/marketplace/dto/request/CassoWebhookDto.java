@@ -9,7 +9,7 @@ public class CassoWebhookDto {
 	private List<CassoTransaction> data;
 	
 	@Data
-	public class CassoTransaction {
+	public static class CassoTransaction {
 	    private String description;
 	    private Long amount;
 	    private String tid;
