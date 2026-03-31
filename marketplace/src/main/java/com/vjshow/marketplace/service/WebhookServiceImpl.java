@@ -1,5 +1,6 @@
 package com.vjshow.marketplace.service;
 
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vjshow.marketplace.dto.request.CassoWebhookDto;
@@ -11,6 +12,7 @@ import com.vjshow.marketplace.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
+@Component
 @RequiredArgsConstructor
 public class WebhookServiceImpl implements WebhookService {
 	

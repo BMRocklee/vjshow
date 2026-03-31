@@ -15,7 +15,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/webhook")
 @RequiredArgsConstructor
 public class PaymentWebhookController {
-	private WebhookService webhookService;
+	
+	private final WebhookService webhookService;
 
 	@PostMapping("/casso")
 	public ResponseEntity<?> handleCasso(@RequestBody CassoWebhookDto cassoDto) {
