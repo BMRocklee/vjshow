@@ -1,5 +1,7 @@
 package com.vjshow.marketplace.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +46,8 @@ public class WebhookServiceImpl implements WebhookService {
             if (!payment.getAmount().equals(tx.getAmount())) continue;
 
             // ✅ update payment
+            payment.setStatus(PaymentStatusEnum.PAID);
+            payment.setPaidAt(LocalDateTime.now());
             paymentService.markSuccess(payment);
 
             // ✅ update order
