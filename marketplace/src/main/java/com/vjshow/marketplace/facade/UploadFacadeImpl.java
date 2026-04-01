@@ -8,9 +8,9 @@ import com.vjshow.marketplace.dto.request.CompleteUploadRequest;
 import com.vjshow.marketplace.dto.response.UploadResponse;
 import com.vjshow.marketplace.entity.CreatorEntity;
 import com.vjshow.marketplace.entity.ProductEntity;
+import com.vjshow.marketplace.service.CloudFlareService;
 import com.vjshow.marketplace.service.CreatorService;
 import com.vjshow.marketplace.service.ProductService;
-import com.vjshow.marketplace.storage.CloudFlareService;
 
 import lombok.RequiredArgsConstructor;
 
