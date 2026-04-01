@@ -1,4 +1,4 @@
-package com.vjshow.marketplace.storage;
+package com.vjshow.marketplace.service;
 
 import java.time.Duration;
 
@@ -44,7 +44,6 @@ public class CloudFlareService {
 	}
 
 	public String generatePresignedUrl(String key) {
-
 		PutObjectRequest request = PutObjectRequest.builder().bucket(bucket).key(key).build();
 
 		PresignedPutObjectRequest presignedRequest = presigner
