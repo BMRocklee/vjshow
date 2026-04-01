@@ -85,7 +85,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
 
             // 👉 generate presigned
-			String url = storageService.generatePresignedUrl(product.getFileKey());
+			String url = storageService.generateDownloadUrl(product.getFileKey());
 
             res.setDownloadUrl(url);
         }
