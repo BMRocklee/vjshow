@@ -2,6 +2,8 @@ package com.vjshow.marketplace.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.dto.request.CompleteUploadRequest;
@@ -75,5 +77,16 @@ public class ProductServiceImpl implements ProductService {
 		ProductTypeEnum productType = ProductTypeEnum.valueOf(type);
 
 		return productRepository.findByStatusAndTypeAndNameContainingIgnoreCase(status, productType, keyword);
+	}
+
+	@Override
+	public List<ProductEntity> getTopProducts(ProductTypeEnum type) {
+		return productRepository.findTop5ByTypeOrderByTotalSalesDesc(type);
+	}
+	
+	@Override
+	public List<ProductEntity> getTopProducts(ProductTypeEnum type, Long quantity) {
+		Pageable pageable = PageRequest.of(0, quantity.intValue());
+		return productRepository.findByTypeOrderByTotalSalesDesc(type, pageable);
 	}
 }
