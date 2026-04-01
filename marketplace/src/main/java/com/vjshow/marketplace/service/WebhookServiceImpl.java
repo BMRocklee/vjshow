@@ -32,7 +32,7 @@ public class WebhookServiceImpl implements WebhookService {
 
             String content = tx.getDescription();
 
-            if (content == null || !content.startsWith("VJSHOW-")) continue;
+            if (content == null || !content.startsWith("VJSHOW")) continue;
 
             PaymentEntity payment = paymentService
                 .findByContent(content)

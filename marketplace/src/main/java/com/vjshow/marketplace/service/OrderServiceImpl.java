@@ -52,11 +52,12 @@ public class OrderServiceImpl implements OrderService {
         
         // 2. Create payment
         String paymentId = UUID.randomUUID().toString();
+        String paymentContent = "VJSHOW" + buyer.getId() + System.currentTimeMillis();
 
         PaymentEntity payment = new PaymentEntity();
         payment.setId(paymentId);
         payment.setAmount(product.getPrice());
-        payment.setContent("VJSHOW-" + paymentId);
+        payment.setContent(paymentContent); 
         payment.setStatus(PaymentStatusEnum.PENDING);
         payment.setCreatedAt(LocalDateTime.now());
         paymentRepo.save(payment);
