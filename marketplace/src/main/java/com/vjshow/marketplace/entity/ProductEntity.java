@@ -69,8 +69,6 @@ public class ProductEntity {
 
 	private Long totalSales;
 
-	private Boolean isActive;
-
 	private LocalDateTime createdAt;
 	
 	private Long width;
