@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vjshow.marketplace.dto.request.HandleFileDoneRequest;
+import com.vjshow.marketplace.enums.ProductTypeEnum;
 import com.vjshow.marketplace.facade.ProductFacade;
 
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,10 @@ public class ProductController {
 	@PostMapping("/done")
 	public void done(@RequestBody HandleFileDoneRequest fileInfo) {
 		productFacade.markDone(fileInfo);
+	}
+
+	@GetMapping("/getTop")
+	public ResponseEntity<?> getTopProducts(@RequestParam ProductTypeEnum type, @RequestParam Long quantity) {
+		return ResponseEntity.ok(productFacade.getTopProducts(type, quantity));
 	}
 }
