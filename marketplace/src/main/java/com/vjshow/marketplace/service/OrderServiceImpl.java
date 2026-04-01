@@ -90,8 +90,9 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void markPaid(OrderEntity order) {
-		// TODO Auto-generated method stub
-		
+        order.setStatus(OrderStatusEnum.PAID);
+        order.setPaidAt(LocalDateTime.now());
+		orderRepo.save(order);
 	}
 
 }
