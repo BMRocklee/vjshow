@@ -2,6 +2,7 @@ package com.vjshow.marketplace.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.vjshow.marketplace.entity.ProductEntity;
@@ -22,5 +23,9 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 			String keyword);
 
 	List<ProductEntity> findByCreatorIdOrderByCreatedAtDesc(Long creatorId);
+
+	List<ProductEntity> findTop5ByTypeOrderByTotalSalesDesc(ProductTypeEnum type);
+
+	List<ProductEntity> findByTypeOrderByTotalSalesDesc(ProductTypeEnum type, Pageable pageable);
 
 }
