@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.vjshow.marketplace.dto.request.HandleFileDoneRequest;
 import com.vjshow.marketplace.dto.response.UserProductResponse;
+import com.vjshow.marketplace.enums.ProductTypeEnum;
 
 public interface ProductFacade {
 	public List<UserProductResponse> getProducts(String type, String keyword);
@@ -11,4 +12,6 @@ public interface ProductFacade {
 	public UserProductResponse getById(Long id);
 	
 	void markDone(HandleFileDoneRequest request);
+
+	public List<UserProductResponse> getTopProducts(ProductTypeEnum type, Long quantity);
 }
