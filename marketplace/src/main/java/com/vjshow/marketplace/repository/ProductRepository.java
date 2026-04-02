@@ -2,6 +2,7 @@ package com.vjshow.marketplace.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,10 +18,11 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
 	List<ProductEntity> findByTypeAndNameContainingIgnoreCase(ProductTypeEnum valueOf, String keyword);
 
-	List<ProductEntity> findByStatusAndNameContainingIgnoreCase(ProductStatusEnum status, String keyword);
+	Page<ProductEntity> findByStatusAndNameContainingIgnoreCase(ProductStatusEnum status, String name,
+			Pageable pageable);
 
-	List<ProductEntity> findByStatusAndTypeAndNameContainingIgnoreCase(ProductStatusEnum status, ProductTypeEnum type,
-			String keyword);
+	Page<ProductEntity> findByStatusAndTypeAndNameContainingIgnoreCase(ProductStatusEnum status, ProductTypeEnum type,
+			String name, Pageable pageable);
 
 	List<ProductEntity> findByCreatorIdOrderByCreatedAtDesc(Long creatorId);
 

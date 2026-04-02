@@ -2,8 +2,10 @@ package com.vjshow.marketplace.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.dto.request.CompleteUploadRequest;
@@ -62,21 +64,24 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductEntity> getPublicProducts(String type, String keyword) {
-		// normalize keyword
-		if (keyword == null)
-			keyword = "";
+	public Page<ProductEntity> getPublicProducts(String type, String keyword, int page, int size) {
 
-		// only DONE products
-		ProductStatusEnum status = ProductStatusEnum.DONE;
+	    if (keyword == null) keyword = "";
 
-		if (type == null || type.isEmpty()) {
-			return productRepository.findByStatusAndNameContainingIgnoreCase(status, keyword);
-		}
+	    ProductStatusEnum status = ProductStatusEnum.DONE;
 
-		ProductTypeEnum productType = ProductTypeEnum.valueOf(type);
+	    // ⚠️ Spring page bắt đầu từ 0
+	    Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
 
-		return productRepository.findByStatusAndTypeAndNameContainingIgnoreCase(status, productType, keyword);
+	    if (type == null || type.isEmpty()) {
+	        return productRepository
+	                .findByStatusAndNameContainingIgnoreCase(status, keyword, pageable);
+	    }
+
+	    ProductTypeEnum productType = ProductTypeEnum.valueOf(type);
+
+	    return productRepository
+	            .findByStatusAndTypeAndNameContainingIgnoreCase(status, productType, keyword, pageable);
 	}
 
 	@Override

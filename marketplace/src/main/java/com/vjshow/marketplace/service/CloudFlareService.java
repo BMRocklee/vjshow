@@ -1,5 +1,7 @@
 package com.vjshow.marketplace.service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -55,9 +57,15 @@ public class CloudFlareService {
 	}
 	
 	public String generateDownloadUrl(String key) {
+		String fileName = extractFileName(key);		
+		String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+			    .replaceAll("\\+", "%20");
 	    GetObjectRequest request = GetObjectRequest.builder()
 	        .bucket(bucket)
 	        .key(key)
+	        .responseContentDisposition(
+	                "attachment; filename=\"" + encodedFileName + "\""
+	            )
 	        .build();
 
 	    PresignedGetObjectRequest presignedRequest = presigner
@@ -69,6 +77,18 @@ public class CloudFlareService {
 	    return presignedRequest.url().toString();
 	}
 	
+	
+	private String extractFileName(String key) {
+	    String fullName = key.substring(key.lastIndexOf("/") + 1); 
+	    // 👉 550e8400..._my-video.mp4
+
+	    int index = fullName.indexOf("_");
+	    if (index != -1) {
+	        return fullName.substring(index + 1); // 👉 my-video.mp4
+	    }
+
+	    return fullName;
+	}
 	
 	
 }
