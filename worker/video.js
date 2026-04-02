@@ -17,8 +17,8 @@ region: 'auto',
 endpoint: 'https://f2cf3a00591888eeaac9767d3bc1881a.r2.cloudflarestorage.com',
 forcePathStyle: true,
 credentials: {
-accessKeyId: 'xxx',
-secretAccessKey: 'xxx'
+accessKeyId: '7476a0b5b996b0246f2b0f1fb2d3eeb8',
+secretAccessKey: '1f68525330a3f3241abc7361a6dc6eb3abd6740d8fa2cc875dc9b079418b8073'
 }
 })
 
