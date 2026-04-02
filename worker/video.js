@@ -8,235 +8,158 @@ import path from 'path'
 import os from 'os'
 
 // =====================
-// 🔥 CONFIG
+// CONFIG
 // =====================
 const BUCKET = 'vjshow'
 
 const s3 = new S3Client({
-  region: 'auto',
-  endpoint: 'https://f2cf3a00591888eeaac9767d3bc1881a.r2.cloudflarestorage.com',
-  forcePathStyle: true,
-  credentials: {
-    accessKeyId: '7476a0b5b996b0246f2b0f1fb2d3eeb8',
-    secretAccessKey: '1f68525330a3f3241abc7361a6dc6eb3abd6740d8fa2cc875dc9b079418b8073'
-  }
+region: 'auto',
+endpoint: 'https://f2cf3a00591888eeaac9767d3bc1881a.r2.cloudflarestorage.com',
+forcePathStyle: true,
+credentials: {
+accessKeyId: 'xxx',
+secretAccessKey: 'xxx'
+}
 })
 
 // =====================
-// 🔥 STREAM → FILE
+// STREAM UPLOAD (NO RAM)
 // =====================
-const streamToFile = (stream, filePath) =>
-  new Promise((resolve, reject) => {
-    const write = fs.createWriteStream(filePath)
-    stream.pipe(write)
-    stream.on('error', reject)
-    write.on('finish', resolve)
-  })
-
-// =====================
-// 🔥 UPLOAD
-// =====================
-const uploadToR2 = async (key, filePath, contentType) => {
-  const file = fs.readFileSync(filePath)
-
-  await s3.send(new PutObjectCommand({
-    Bucket: BUCKET,
-    Key: key,
-    Body: file,
-    ContentType: contentType
-  }))
+const uploadStream = async (key, stream, contentType) => {
+await s3.send(new PutObjectCommand({
+Bucket: BUCKET,
+Key: key,
+Body: stream,
+ContentType: contentType
+}))
 }
 
 // =====================
-// 🔥 RUN FFMPEG
+// FFMPEG RUN
 // =====================
-const runFFmpeg = (args) =>
-  new Promise((resolve, reject) => {
-    const ff = spawn(ffmpegPath, args)
-
-    ff.stderr.on('data', (d) => console.log(d.toString()))
-
-    ff.on('close', (code) => {
-      if (code === 0) resolve()
-      else reject(new Error(`FFmpeg failed: ${code}`))
-    })
-
-    ff.on('error', reject)
-  })
-
-// =====================
-// 🔥 METADATA
-// =====================
-const getVideoMetadata = (input) =>
-  new Promise((resolve, reject) => {
-    const ff = spawn(ffprobePath.path, [
-      '-v', 'error',
-      '-print_format', 'json',
-      '-show_streams',
-      '-show_format',
-      input
-    ])
-
-    let data = ''
-    ff.stdout.on('data', (c) => (data += c))
-
-    ff.on('close', () => {
-      try {
-        const json = JSON.parse(data)
-        const video = json.streams.find(s => s.codec_type === 'video')
-
-        resolve({
-          width: video?.width || 1280,
-          height: video?.height || 720,
-          duration: parseFloat(json.format.duration || 0)
-        })
-      } catch (e) {
-        reject(e)
-      }
-    })
-
-    ff.on('error', reject)
-  })
-
-// =====================
-// 🔥 WATERMARK SVG (GIỐNG IMAGE)
-// =====================
-const createWatermarkSvg = (width, height, opacity = 0.08) => {
-  const patternSize = Math.floor(width / 2.5)
-  const fontSize = Math.floor(width / 14)
-
-  return `
-  <svg width="${width}" height="${height}">
-    <defs>
-      <pattern 
-        id="wm" 
-        width="${patternSize}" 
-        height="${patternSize}" 
-        patternUnits="userSpaceOnUse" 
-        patternTransform="rotate(-30)"
-      >
-        <text 
-          x="${patternSize * 0.1}" 
-          y="${patternSize * 0.6}" 
-          font-size="${fontSize}" 
-          fill="white" 
-          opacity="${opacity}" 
-          font-weight="bold"
-        >
-          VJSHOW
-        </text>
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#wm)" />
-  </svg>
-  `
+const spawnFFmpeg = (args) => {
+const ff = spawn(ffmpegPath, args)
+ff.stderr.on('data', d => console.log(d.toString()))
+return ff
 }
 
 // =====================
-// 🚀 MAIN
+// WATERMARK
+// =====================
+const createWatermark = async (width, height) => {
+const svg = `   <svg width="${width}" height="${height}">     <text x="50%" y="50%" font-size="${Math.floor(width/12)}"
+      fill="white" opacity="0.1"
+      text-anchor="middle"
+      transform="rotate(-30 ${width/2} ${height/2})">
+      VJSHOW     </text>   </svg>`
+
+const file = path.join(os.tmpdir(), `wm-${Date.now()}.png`)
+await sharp(Buffer.from(svg)).png().toFile(file)
+return file
+}
+
+// =====================
+// MAIN
 // =====================
 export const processVideo = async ({ key }) => {
-  const tmp = os.tmpdir()
+const tmp = os.tmpdir()
+const hlsDir = path.join(tmp, `hls-${Date.now()}`)
+fs.mkdirSync(hlsDir)
 
-  const input = path.join(tmp, `input-${Date.now()}.mp4`)
-  const preview = path.join(tmp, `preview-${Date.now()}.mp4`)
-  const thumbRaw = path.join(tmp, `thumb-raw-${Date.now()}.jpg`)
-  const thumb = path.join(tmp, `thumb-${Date.now()}.jpg`)
-  const wmImage = path.join(tmp, `wm-${Date.now()}.png`)
+// 🔥 get stream từ R2
+const object = await s3.send(new GetObjectCommand({
+Bucket: BUCKET,
+Key: key
+}))
 
-  try {
-    console.log('🎬 Processing:', key)
+const inputStream = object.Body
 
-    // ⬇️ download
-    const object = await s3.send(new GetObjectCommand({
-      Bucket: BUCKET,
-      Key: key
-    }))
+// =====================
+// PREVIEW (10s)
+// =====================
+const previewKey = key.replace('original/', 'preview/').replace(/.\w+$/, '.mp4')
 
-    await streamToFile(object.Body, input)
+const previewFF = spawnFFmpeg([
+'-i', 'pipe:0',
+'-t', '10',
+'-vf', 'scale=1280:-1',
+'-preset', 'veryfast',
+'-threads', '1',
+'-f', 'mp4',
+'pipe:1'
+])
 
-    // 📊 metadata
-    const { width, height, duration } = await getVideoMetadata(input)
+inputStream.pipe(previewFF.stdin)
 
-    // =====================
-    // 🎬 PREVIEW (FIX ĐEN VIDEO)
-    // =====================
+await uploadStream(previewKey, previewFF.stdout, 'video/mp4')
 
-    // tạo watermark PNG từ SVG
-    const svg = createWatermarkSvg(width, height, 0.12)
+// =====================
+// THUMBNAIL
+// =====================
+const thumbKey = key.replace('original/', 'thumb/').replace(/.\w+$/, '.jpg')
 
-    await sharp(Buffer.from(svg))
-      .png()
-      .toFile(wmImage)
+const thumbFF = spawnFFmpeg([
+'-i', 'pipe:0',
+'-ss', '2',
+'-vframes', '1',
+'-f', 'image2pipe',
+'pipe:1'
+])
 
-    await runFFmpeg([
-      '-i', input,
-      '-i', wmImage,
-      '-t', '10',
+inputStream.pipe(thumbFF.stdin)
 
-      '-filter_complex',
-      '[0:v][1:v] overlay=0:0',
+await uploadStream(thumbKey, thumbFF.stdout, 'image/jpeg')
 
-      '-c:v', 'libx264',
-      '-preset', 'fast',
-      '-crf', '28',
-      '-an',
-      preview
-    ])
+// =====================
+// HLS FULL VIDEO + WATERMARK
+// =====================
+const wm = await createWatermark(1280, 720)
 
-    const previewKey = key
-      .replace('original/', 'preview/')
-      .replace(/\.\w+$/, '.mp4')
+const hlsFF = spawnFFmpeg([
+'-i', 'pipe:0',
+'-i', wm,
+'-filter_complex', '[0:v][1:v] overlay=0:0',
+'-preset', 'veryfast',
+'-threads', '1',
+'-f', 'hls',
+'-hls_time', '6',
+'-hls_list_size', '0',
+'-hls_segment_filename', `${hlsDir}/seg_%03d.ts`,
+`${hlsDir}/index.m3u8`
+])
 
-    await uploadToR2(previewKey, preview, 'video/mp4')
+inputStream.pipe(hlsFF.stdin)
 
-    // =====================
-    // 🖼 THUMB
-    // =====================
-    const captureTime = Math.max(1, Math.floor(duration / 3))
+await new Promise(resolve => hlsFF.on('close', resolve))
 
-    await runFFmpeg([
-      '-i', input,
-      '-ss', `${captureTime}`,
-      '-vframes', '1',
-      thumbRaw
-    ])
+// upload HLS files
+const files = fs.readdirSync(hlsDir)
 
-    const buffer = fs.readFileSync(thumbRaw)
-    const img = sharp(buffer)
-    const meta = await img.metadata()
+for (const file of files) {
+const filePath = path.join(hlsDir, file)
+const stream = fs.createReadStream(filePath)
 
-    const svgThumb = createWatermarkSvg(meta.width, meta.height, 0.08)
+```
+const keyHls = key.replace('original/', 'hls/') + '/' + file
 
-    const finalThumb = await img
-      .composite([{ input: Buffer.from(svgThumb) }])
-      .jpeg({ quality: 90 })
-      .toBuffer()
+await uploadStream(
+  keyHls,
+  stream,
+  file.endsWith('.m3u8')
+    ? 'application/vnd.apple.mpegurl'
+    : 'video/mp2t'
+)
 
-    fs.writeFileSync(thumb, finalThumb)
+fs.unlinkSync(filePath)
+```
 
-    const thumbKey = key
-      .replace('original/', 'thumb/')
-      .replace(/\.\w+$/, '.jpg')
+}
 
-    await uploadToR2(thumbKey, thumb, 'image/jpeg')
+fs.rmdirSync(hlsDir)
 
-    console.log('✅ Done:', previewKey, thumbKey)
-
-    return {
-      previewUrl: previewKey,
-      thumbUrl: thumbKey,
-      width,
-      height,
-      duration
-    }
-
-  } catch (err) {
-    console.error('❌ VIDEO ERROR:', err)
-    throw err
-  } finally {
-    ;[input, preview, thumbRaw, thumb, wmImage].forEach((f) => {
-      if (fs.existsSync(f)) fs.unlinkSync(f)
-    })
-  }
+return {
+previewUrl: previewKey,
+thumbUrl: thumbKey,
+hlsUrl: key.replace('original/', 'hls/') + '/index.m3u8'
+}
 }
