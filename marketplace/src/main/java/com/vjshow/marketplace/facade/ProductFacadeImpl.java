@@ -2,6 +2,7 @@ package com.vjshow.marketplace.facade;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.dto.request.HandleFileDoneRequest;
@@ -27,13 +28,11 @@ public class ProductFacadeImpl implements ProductFacade {
 	private final ProductRepository productRepository;
 
 	@Override
-	public List<UserProductResponse> getProducts(String type, String keyword) {
+	public Page<UserProductResponse> getPublicProducts(String type, String keyword, int page, int size) {
 
-		List<ProductEntity> entities = productService.getPublicProducts(type, keyword);
+	    Page<ProductEntity> data = productService.getPublicProducts(type, keyword, page, size);
 
-		List<UserProductResponse> response = entities.stream().map(productMapper::toResponse).toList();
-
-		return response;
+		return data.map(productMapper::toResponse);
 	}
 
 	@Override
