@@ -48,7 +48,7 @@ storage:
     secret-key: 1f68525330a3f3241abc7361a6dc6eb3abd6740d8fa2cc875dc9b079418b8073
     endpoint: https://f2cf3a00591888eeaac9767d3bc1881a.r2.cloudflarestorage.com
     bucket: vjshow
-    public-url: https://pub-2fc83ef40b8e48f88139142d2dc15bda.r2.dev
+    public-url: https://cdn.vjshow.vn
 worker:
   url: http://queue-api:3001
   #url: http://localhost:3001
