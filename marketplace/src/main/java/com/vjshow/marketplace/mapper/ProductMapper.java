@@ -23,6 +23,7 @@ public class ProductMapper {
 
 		res.setThumbnailUrl(buildUrl(p.getThumbnailUrl()));
 		res.setPreviewUrl(buildUrl(p.getPreviewUrl()));
+		res.setHlsUrl(buildUrl(p.getHlsVideoUrl()));
 
 		res.setCreatedAt(p.getCreatedAt());
 
