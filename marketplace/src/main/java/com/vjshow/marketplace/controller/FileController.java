@@ -13,7 +13,6 @@ import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.entity.UserEntity;
 import com.vjshow.marketplace.exception.LogicException;
 import com.vjshow.marketplace.facade.UploadFacade;
-import com.vjshow.marketplace.service.WorkerService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,8 +23,6 @@ public class FileController {
 	
 	private final UploadFacade uploadFacade;
 	
-	private final WorkerService workerService;
-
 	@PostMapping("/init")
 	public UploadResponse initUpload(Authentication authentication, @RequestParam String fileName,
 			@RequestParam Long fileSize) {
@@ -49,9 +46,7 @@ public class FileController {
 		UserEntity currentUser = (UserEntity) authentication.getPrincipal();
 		
 		ProductEntity product = uploadFacade.completeUpload(request, currentUser.getId());
-		
-		workerService.sendJob(product.getFileKey(), product.getType().name());
-		
+						
 		return product;
 	}
 }
