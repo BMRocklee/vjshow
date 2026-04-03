@@ -13,6 +13,7 @@ import com.vjshow.marketplace.enums.PaymentStatusEnum;
 import com.vjshow.marketplace.exception.LogicException;
 import com.vjshow.marketplace.repository.OrderRepository;
 import com.vjshow.marketplace.repository.PaymentRepository;
+import com.vjshow.marketplace.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,8 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	private final OrderRepository orderRepo;
 	
+	private final ProductRepository productRepo;
+	
 	private final CloudFlareService storageService;
 
 	@Override
@@ -34,7 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public Optional<PaymentEntity> findByContent(String content) {
 		// TODO Auto-generated method stub
-		return paymentRepo.findByContentInText(content);
+		return paymentRepo.findByContent(content);
 	}
 
 	@Override
@@ -71,6 +74,8 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.getStatus() == PaymentStatusEnum.PAID) {
 
             ProductEntity product = order.getProduct();
+            product.setTotalSales(product.getTotalSales() + 1);
+            productRepo.save(product);
 
             // 🔥 check download hết hạn chưa
             if (order.getDownloadExpiredAt() != null &&
@@ -86,7 +91,6 @@ public class PaymentServiceImpl implements PaymentService {
 
             // 👉 generate presigned
 			String url = storageService.generateDownloadUrl(product.getFileKey());
-
             res.setDownloadUrl(url);
         }
 
