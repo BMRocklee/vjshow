@@ -2,7 +2,6 @@ package com.vjshow.marketplace.facade;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.dto.request.HandleFileDoneRequest;
@@ -28,11 +27,13 @@ public class ProductFacadeImpl implements ProductFacade {
 	private final ProductRepository productRepository;
 
 	@Override
-	public Page<UserProductResponse> getPublicProducts(String type, String keyword, int page, int size) {
+	public List<UserProductResponse> getProducts(String type, String keyword) {
 
-	    Page<ProductEntity> data = productService.getPublicProducts(type, keyword, page, size);
+		List<ProductEntity> entities = productService.getPublicProducts(type, keyword);
 
-		return data.map(productMapper::toResponse);
+		List<UserProductResponse> response = entities.stream().map(productMapper::toResponse).toList();
+
+		return response;
 	}
 
 	@Override
@@ -58,6 +59,7 @@ public class ProductFacadeImpl implements ProductFacade {
 
 		product.setPreviewUrl(fileInfo.getPreviewUrl());
 		product.setThumbnailUrl(fileInfo.getThumbUrl());
+		product.setHlsVideoUrl(fileInfo.getHlsUrl());
 		product.setWidth(fileInfo.getWidth());
 		product.setHeight(fileInfo.getHeight());
 		product.setDuration(fileInfo.getDuration());
