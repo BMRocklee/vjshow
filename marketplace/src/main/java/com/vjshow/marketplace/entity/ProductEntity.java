@@ -64,8 +64,8 @@ public class ProductEntity {
 	// key trên cloudflare R2 (private)
 	private String fileKey;
 
-	// url tạm (pre-signed)
-	private String presignedUrl;
+	// url hsl video
+	private String hlsVideoUrl;
 
 	private Long totalSales;
 
@@ -84,5 +84,6 @@ public class ProductEntity {
 	@PrePersist
 	public void prePersist() {
 	    createdAt = LocalDateTime.now();
+	    totalSales = 0l;
 	}
 }
