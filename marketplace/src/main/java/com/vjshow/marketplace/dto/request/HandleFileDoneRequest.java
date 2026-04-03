@@ -9,6 +9,8 @@ public class HandleFileDoneRequest {
     private String previewUrl;
     
     private String thumbUrl;
+    
+    private String hlsUrl;
 
     private Long width;
 
