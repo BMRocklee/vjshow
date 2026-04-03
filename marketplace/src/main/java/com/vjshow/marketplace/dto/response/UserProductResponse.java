@@ -24,6 +24,7 @@ public class UserProductResponse {
 
     private String thumbnailUrl;
     private String previewUrl;
+    private String hlsUrl;
 
     private Boolean isActive;
 
