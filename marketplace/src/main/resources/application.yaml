@@ -1,20 +1,22 @@
 spring:
  datasource:
-  url: jdbc:postgresql://postgres:5432/vjshow
+  url: jdbc:postgresql://postgres-db:5432/vjshow
   username: postgres
   password: 123456
   hikari:
     maximum-pool-size: 10
     minimum-idle: 2
-    idle-timeout: 300000          # 5 phút
-    max-lifetime: 1800000         # 30 phút
-    keepalive-time: 60000         # 🔥 giữ connection sống
-    connection-timeout: 30000
+    idle-timeout: 300000
+    max-lifetime: 600000
+    keepalive-time: 30000
+    connection-timeout: 20000
     validation-timeout: 5000
+		# Quan trọng: Không để Hikari sập ngay lập tức nếu DB chưa sẵn sàng
+    initialization-fail-timeout: 0
     connection-test-query: SELECT 1
  jpa:
   hibernate:
-   ddl-auto: update
+   ddl-auto: validate
   show-sql: true
   properties:
    hibernate:
