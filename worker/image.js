@@ -26,7 +26,7 @@ const streamToBuffer = async (stream) => {
 }
 
 // 🔥 create watermark SVG (responsive)
-const createWatermarkSvg = (width, height, opacity = 0.12) => {
+const createWatermarkSvg = (width, height, opacity = 0.25) => {
   const patternSize = Math.floor(width / 2.5)
   const fontSize = Math.floor(width / 14)
 
@@ -76,7 +76,7 @@ export const processImage = async ({ key }) => {
     // =========================
     // 🟢 PREVIEW (FULL + WATERMARK)
     // =========================
-    const previewSvg = createWatermarkSvg(width, height, 0.12)
+    const previewSvg = createWatermarkSvg(width, height, 0.25)
 
     const previewBuffer = await sharp(buffer)
       .composite([{ input: Buffer.from(previewSvg) }])
@@ -95,7 +95,7 @@ export const processImage = async ({ key }) => {
     const thumbWidth = 300
     const thumbHeight = Math.round((height / width) * thumbWidth)
 
-    const thumbSvg = createWatermarkSvg(thumbWidth, thumbHeight, 0.08)
+    const thumbSvg = createWatermarkSvg(thumbWidth, thumbHeight, 0.)
 
     const thumbBuffer = await sharp(buffer)
       .resize(thumbWidth)
