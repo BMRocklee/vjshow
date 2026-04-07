@@ -40,6 +40,7 @@ public class ProductMapper {
 		res.setHlsUrl(buildUrl(p.getHlsVideoUrl()));
 
 		res.setCreatedAt(p.getCreatedAt());
+		res.setTotalSales(p.getTotalSales());
 
 		// 🔥 media
 		res.setWidth(p.getWidth());

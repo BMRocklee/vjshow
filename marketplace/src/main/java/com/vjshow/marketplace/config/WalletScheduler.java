@@ -17,7 +17,7 @@ public class WalletScheduler {
     
     private final CreatorWalletRepository walletRepo;
 
-    @Scheduled(cron = "0 0 2 * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     @Transactional
     public void releasePending() {
 

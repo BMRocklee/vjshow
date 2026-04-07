@@ -23,6 +23,8 @@ public class WebhookServiceImpl implements WebhookService {
 	
 	private final OrderService orderService;
 	
+    private final WalletService walletService;
+	
 	private final OrderRepository orderRepo;
 	
 	private final ProductRepository productRepo;
@@ -60,6 +62,8 @@ public class WebhookServiceImpl implements WebhookService {
             
             // ✅ update product
             productRepo.incrementSales(order.getProduct().getId());
+            
+            walletService.handleOrderPaid(order);
 
             orderService.markPaid(order);
         }

@@ -1,11 +1,15 @@
 package com.vjshow.marketplace.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vjshow.marketplace.dto.response.TransactionResponse;
+import com.vjshow.marketplace.dto.response.WalletResponse;
+import com.vjshow.marketplace.dto.response.WithdrawResponse;
 import com.vjshow.marketplace.entity.CreatorWalletEntity;
 import com.vjshow.marketplace.entity.OrderEntity;
 import com.vjshow.marketplace.entity.WalletTransactionEntity;
@@ -101,4 +105,51 @@ public class WalletServiceImpl implements WalletService {
                 .referenceId(req.getId())
                 .build());
     }
+
+	@Override
+	@Transactional(readOnly = true)
+	public WalletResponse getWallet(Long creatorId) {
+		 CreatorWalletEntity wallet = walletRepo.findById(creatorId)
+		            .orElseGet(() -> CreatorWalletEntity.builder()
+		                    .creatorId(creatorId)
+		                    .availableBalance(0L)
+		                    .pendingBalance(0L)
+		                    .totalEarned(0L)
+		                    .build());
+
+		    return WalletResponse.builder()
+		            .availableBalance(wallet.getAvailableBalance())
+		            .pendingBalance(wallet.getPendingBalance())
+		            .totalEarned(wallet.getTotalEarned())
+		            .build();
+	}
+
+	@Override
+	public List<TransactionResponse> getTransactions(Long creatorId) {
+		return txRepo.findByCreatorIdOrderByCreatedAtDesc(creatorId)
+	            .stream()
+	            .map(tx -> TransactionResponse.builder()
+	                    .id(tx.getId())
+	                    .amount(tx.getAmount())
+	                    .type(tx.getType().name())
+	                    .referenceId(tx.getReferenceId())
+	                    .createdAt(tx.getCreatedAt())
+	                    .build())
+	            .toList();
+	}
+
+	@Override
+	public List<WithdrawResponse> getWithdraws(Long creatorId) {
+		return withdrawRepo.findByCreatorIdOrderByCreatedAtDesc(creatorId)
+	            .stream()
+	            .map(w -> WithdrawResponse.builder()
+	                    .id(w.getId())
+	                    .amount(w.getAmount())
+	                    .status(w.getStatus().name())
+	                    .bankInfo(w.getBankInfo())
+	                    .createdAt(w.getCreatedAt())
+	                    .processedAt(w.getProcessedAt())
+	                    .build())
+	            .toList();
+	}
 }
