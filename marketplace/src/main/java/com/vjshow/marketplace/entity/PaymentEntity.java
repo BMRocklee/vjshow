@@ -37,4 +37,6 @@ public class PaymentEntity {
 	private LocalDateTime createdAt;
 
 	private LocalDateTime paidAt;
+	
+	
 }
