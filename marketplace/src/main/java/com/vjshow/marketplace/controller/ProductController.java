@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vjshow.marketplace.dto.request.HandleFileDoneRequest;
 import com.vjshow.marketplace.dto.response.UserProductResponse;
-import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
 import com.vjshow.marketplace.facade.ProductFacade;
 
