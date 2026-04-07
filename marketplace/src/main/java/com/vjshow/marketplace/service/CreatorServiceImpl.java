@@ -2,10 +2,12 @@ package com.vjshow.marketplace.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.vjshow.marketplace.dto.request.CreatorApplyRequestDTO.CreatorApplyRequest;
+import com.vjshow.marketplace.dto.response.CreatorResponse;
 import com.vjshow.marketplace.entity.CreatorEntity;
 import com.vjshow.marketplace.entity.UserEntity;
 import com.vjshow.marketplace.enums.CreatorStatus;
@@ -101,4 +103,17 @@ public class CreatorServiceImpl implements CreatorService {
 	        creator.setUsedStorage(creator.getUsedStorage() + fileSize);
 	        creatorRepository.save(creator);
 	    }
+
+		@Override
+		public CreatorResponse getByPublicId(UUID publicId) {
+			UserEntity user = userRepository.findByPublicId(publicId)
+	                .orElseThrow(() -> new LogicException("NOT_FOUND", "Creator không tồn tại"));
+
+	        return CreatorResponse.builder()
+	                .publicId(user.getPublicId())
+	                .name(user.getName())
+	                .picture(user.getPicture())
+	                .verified(user.getRole() == Role.CREATOR)
+	                .build();
+		}
 }
