@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.vjshow.marketplace.dto.response.PaymentStatusResponse;
 import com.vjshow.marketplace.entity.OrderEntity;
 import com.vjshow.marketplace.entity.PaymentEntity;
-import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.PaymentStatusEnum;
 import com.vjshow.marketplace.exception.LogicException;
 import com.vjshow.marketplace.repository.OrderRepository;
@@ -24,9 +23,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final PaymentRepository paymentRepo;
 	
 	private final OrderRepository orderRepo;
-	
-	private final ProductRepository productRepo;
-	
+		
 	private final CloudFlareService storageService;
 
 	@Override
@@ -72,25 +69,14 @@ public class PaymentServiceImpl implements PaymentService {
         res.setStatus(payment.getStatus());
         // 5. nếu PAID → trả link download
         if (payment.getStatus() == PaymentStatusEnum.PAID) {
-
-            ProductEntity product = order.getProduct();
-            product.setTotalSales(product.getTotalSales() + 1);
-            productRepo.save(product);
-
             // 🔥 check download hết hạn chưa
             if (order.getDownloadExpiredAt() != null &&
                 order.getDownloadExpiredAt().isBefore(LocalDateTime.now())) {
                 throw new LogicException("EX","đã hết thời hạn download");
             }
 
-            // 👉 set expire download nếu chưa có mặc định 3 ngày
-            if (order.getDownloadExpiredAt() == null) {
-                order.setDownloadExpiredAt(LocalDateTime.now().plusDays(3));
-                orderRepo.save(order);
-            }
-
             // 👉 generate presigned
-			String url = storageService.generateDownloadUrl(product.getFileKey());
+			String url = storageService.generateDownloadUrl(order.getProduct().getFileKey());
             res.setDownloadUrl(url);
         }
 
