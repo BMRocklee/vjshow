@@ -1,10 +1,14 @@
 package com.vjshow.marketplace.mapper;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.vjshow.marketplace.dto.response.OwnerResponse;
+import com.vjshow.marketplace.dto.response.PurchaseItemResponse;
 import com.vjshow.marketplace.dto.response.UserProductResponse;
+import com.vjshow.marketplace.entity.OrderEntity;
 import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.entity.UserEntity;
 
@@ -57,6 +61,27 @@ public class ProductMapper {
 
 		return res;
 	}
+	
+    // ================= PRIVATE =================
+
+	public PurchaseItemResponse mapToResponse(OrderEntity order) {
+        ProductEntity p = order.getProduct();
+
+        return PurchaseItemResponse.builder()
+                .orderId(order.getId())
+                .productId(p.getId())
+                .name(p.getName())
+                .thumbnail(buildUrl(p.getThumbnailUrl()))
+                .price(order.getAmount())
+                .purchasedAt(order.getPaidAt())
+                .canDownload(canDownload(order))
+                .build();
+    }
+	
+    private boolean canDownload(OrderEntity order) {
+        return order.getDownloadExpiredAt() == null ||
+                order.getDownloadExpiredAt().isAfter(LocalDateTime.now());
+    }
 
 	private String buildUrl(String path) {
 		if (path == null)
