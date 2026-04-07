@@ -9,8 +9,10 @@ import com.vjshow.marketplace.dto.request.CassoWebhookDto;
 import com.vjshow.marketplace.dto.request.CassoWebhookDto.CassoTransaction;
 import com.vjshow.marketplace.entity.OrderEntity;
 import com.vjshow.marketplace.entity.PaymentEntity;
+import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.PaymentStatusEnum;
 import com.vjshow.marketplace.repository.OrderRepository;
+import com.vjshow.marketplace.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,9 @@ public class WebhookServiceImpl implements WebhookService {
 	private final OrderService orderService;
 	
 	private final OrderRepository orderRepo;
+	
+	private final ProductRepository productRepo;
+	
 		
 	@Override
     @Transactional
@@ -53,6 +58,13 @@ public class WebhookServiceImpl implements WebhookService {
             // ✅ update order
             OrderEntity order = orderRepo.findByPaymentId(payment.getId())
                 .orElseThrow();
+
+            orderService.markPaid(order);
+            
+            // ✅ update product
+            ProductEntity productEntity = order.getProduct();
+            productEntity.setTotalSales(productEntity.getTotalSales() + 1);
+            productRepo.save(productEntity);
 
             orderService.markPaid(order);
         }
