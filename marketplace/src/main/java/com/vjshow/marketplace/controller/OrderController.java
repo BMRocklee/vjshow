@@ -1,29 +1,71 @@
-package com.vjshow.marketplace.controller;
+package com.vjshow.marketplace.service;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.time.LocalDateTime;
 
-import com.vjshow.marketplace.dto.request.CreateOrderRequestDto;
-import com.vjshow.marketplace.dto.response.CreatePaymentResponse;
-import com.vjshow.marketplace.entity.UserEntity;
-import com.vjshow.marketplace.facade.OrderFacade;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.vjshow.marketplace.dto.request.CassoWebhookDto;
+import com.vjshow.marketplace.dto.request.CassoWebhookDto.CassoTransaction;
+import com.vjshow.marketplace.entity.OrderEntity;
+import com.vjshow.marketplace.entity.PaymentEntity;
+import com.vjshow.marketplace.enums.PaymentStatusEnum;
+import com.vjshow.marketplace.repository.OrderRepository;
+import com.vjshow.marketplace.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("/api/orders")
+@Component
 @RequiredArgsConstructor
-public class OrderController {
-	private final OrderFacade orderFacade;
+public class WebhookServiceImpl implements WebhookService {
 	
-	@PostMapping("/create")
-    public CreatePaymentResponse create(Authentication authentication, @RequestBody CreateOrderRequestDto orderDto) {
+	private final PaymentService paymentService;
+	
+	private final OrderService orderService;
+	
+    private final WalletService walletService;
+	
+	private final OrderRepository orderRepo;
+	
+	private final ProductRepository productRepo;
+	
+		
+	@Override
+    @Transactional
+    public void handleCasso(CassoWebhookDto body) {
 
-        UserEntity currentUser = (UserEntity) authentication.getPrincipal();
+        for (CassoTransaction tx : body.getData()) {
 
-        return orderFacade.createOrder(orderDto.getProductId(), currentUser);
+            String content = tx.getDescription();
+
+            if (content == null || !content.startsWith("VJSHOW")) continue;
+
+            PaymentEntity payment = paymentService
+                .findByContent(content)
+                .orElse(null);
+
+            if (payment == null) continue;
+
+            // idempotent
+            if (payment.getStatus() == PaymentStatusEnum.SUCCESS) continue;
+
+            if (!payment.getAmount().equals(tx.getAmount())) continue;
+
+            // ✅ update payment
+            payment.setStatus(PaymentStatusEnum.PAID);
+            payment.setPaidAt(LocalDateTime.now());
+            paymentService.markSuccess(payment);
+
+            // ✅ update order
+            OrderEntity order = orderRepo.findByPaymentId(payment.getId())
+                .orElseThrow();
+            
+            // ✅ update product
+            productRepo.incrementSales(order.getProduct().getId());
+            
+            walletService.handleOrderPaid(order);
+
+            orderService.markPaid(order);
+        }
     }
 }
