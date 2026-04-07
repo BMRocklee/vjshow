@@ -13,11 +13,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vjshow.marketplace.dto.request.CreatorApplyRequestDTO.CreatorApplyRequest;
+import com.vjshow.marketplace.dto.request.WithdrawRequestDto;
 import com.vjshow.marketplace.dto.response.CommonResponseDto;
 import com.vjshow.marketplace.dto.response.CreatorResponse;
 import com.vjshow.marketplace.dto.response.ProductPageResponse;
+import com.vjshow.marketplace.entity.CreatorEntity;
+import com.vjshow.marketplace.entity.UserEntity;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
+import com.vjshow.marketplace.exception.LogicException;
 import com.vjshow.marketplace.facade.CreatorFacade;
+import com.vjshow.marketplace.facade.WalletFacade;
+import com.vjshow.marketplace.service.CreatorService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +34,10 @@ public class CreatorController {
 
 	private final CreatorFacade creatorFacade;
 
+	private final WalletFacade facade;
+	
+	private final CreatorService creatorService;
+	
 	@PostMapping("/apply")
 	public ResponseEntity<?> apply(Authentication authentication, @RequestBody CreatorApplyRequest req) {
 		creatorFacade.apply(authentication, req);
@@ -50,4 +60,21 @@ public class CreatorController {
 
 	    return creatorFacade.getProducts(publicId, type, page, size);
 	}
+	
+	@PostMapping("/withdraw")
+    public ResponseEntity<?> withdraw(Authentication auth,
+                                      @RequestBody WithdrawRequestDto dto) {
+		
+		if (auth == null || !auth.isAuthenticated()) {
+			 throw new LogicException("Unauthenticated", "bạn chưa đăng nhập hoặc session đã hết hạn");
+		}
+
+		UserEntity userme = (UserEntity) auth.getPrincipal();
+		
+		CreatorEntity creator =  creatorService.getByUserId(userme.getId());
+
+        facade.requestWithdraw(creator.getId(), dto.getAmount(), dto.getBankInfo());
+
+        return ResponseEntity.ok().build();
+    }
 }
