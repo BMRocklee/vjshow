@@ -146,7 +146,7 @@ const getVideoMetadata = (input) =>
 // =====================
 // 🔥 WATERMARK SVG
 // =====================
-const createWatermarkSvg = (width, height, opacity = 0.25) => {
+const createWatermarkSvg = (width, height, opacity = 0.6) => {
   const patternSize = Math.floor(width / 2.5);
   const fontSize = Math.floor(width / 14);
 
@@ -201,7 +201,7 @@ export const processVideo = async ({ key }) => {
     // WATERMARK
     // =====================
     log("🎨 Creating watermark...");
-    const svg = createWatermarkSvg(width, height, 0.25);
+    const svg = createWatermarkSvg(width, height, 0.6);
     await sharp(Buffer.from(svg)).png().toFile(wmImage);
 
     // =====================
@@ -274,7 +274,7 @@ export const processVideo = async ({ key }) => {
     const img = sharp(fs.readFileSync(thumbRaw));
     const meta = await img.metadata();
 
-    const svgThumb = createWatermarkSvg(meta.width, meta.height, 0.25);
+    const svgThumb = createWatermarkSvg(meta.width, meta.height, 0.6);
 
     const finalThumb = await img
       .composite([{ input: Buffer.from(svgThumb) }])
