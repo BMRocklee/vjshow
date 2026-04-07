@@ -15,6 +15,7 @@ import com.vjshow.marketplace.dto.response.UserAdminResponse;
 import com.vjshow.marketplace.enums.CreatorStatus;
 import com.vjshow.marketplace.enums.UserStatusEnum;
 import com.vjshow.marketplace.facade.AdminFacade;
+import com.vjshow.marketplace.facade.WalletFacade;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 
 	private final AdminFacade adminFacade;
+	
+	private final WalletFacade facade;
 
 	@GetMapping("/stats")
 	public ResponseEntity<?> getAdminDashboardInfo() {
@@ -83,4 +86,10 @@ public class AdminController {
 		adminFacade.activeUser(id);
 	    return ResponseEntity.ok().build();
 	}
+	
+	@PostMapping("/wallet/withdraw/{id}/approve")
+    public ResponseEntity<?> approve(@PathVariable String id) {
+        facade.adminApproveWithdraw(id);
+        return ResponseEntity.ok().build();
+    }
 }
