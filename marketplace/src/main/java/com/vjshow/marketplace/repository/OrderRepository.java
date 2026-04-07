@@ -10,4 +10,6 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 	Optional<OrderEntity> findTopByBuyerIdAndProductIdOrderByCreatedAtDesc(Long buyerId, Long productId);
 
 	Optional<OrderEntity> findByPaymentId(String id);
+	
+	 boolean existsByProduct_Id(Long productId);
 }
