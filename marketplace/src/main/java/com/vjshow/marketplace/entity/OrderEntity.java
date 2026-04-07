@@ -65,11 +65,14 @@ public class OrderEntity {
     
     private LocalDateTime paidAt;
     
+    private Boolean walletProcessed;
+    
  // 🔥 cực kỳ quan trọng
     private LocalDateTime downloadExpiredAt;
     
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
+        walletProcessed = false;
     }
 }
