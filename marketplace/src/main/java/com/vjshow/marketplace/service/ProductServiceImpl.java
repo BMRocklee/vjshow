@@ -1,6 +1,7 @@
 package com.vjshow.marketplace.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,11 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vjshow.marketplace.dto.request.CompleteUploadRequest;
 import com.vjshow.marketplace.dto.request.ProductRequest;
+import com.vjshow.marketplace.dto.response.ProductPageResponse;
+import com.vjshow.marketplace.dto.response.UserProductResponse;
 import com.vjshow.marketplace.entity.CreatorEntity;
 import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.ProductStatusEnum;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
 import com.vjshow.marketplace.exception.LogicException;
+import com.vjshow.marketplace.mapper.ProductMapper;
 import com.vjshow.marketplace.repository.OrderRepository;
 import com.vjshow.marketplace.repository.ProductRepository;
 
@@ -32,6 +36,8 @@ public class ProductServiceImpl implements ProductService {
 	private final OrderRepository orderRepository;
 	
 	private final CloudFlareService r2Service;
+	
+    private final ProductMapper productMapper;
 
 	public ProductEntity getById(Long id) {
 		return productRepository.findById(id)
@@ -132,5 +138,23 @@ public class ProductServiceImpl implements ProductService {
 	        // log lại nhưng KHÔNG fail transaction
 	        log.error("Delete R2 file failed: {}", url, e);
 	    }
+	}
+
+	@Override
+	public ProductPageResponse getByCreator(UUID publicId, ProductTypeEnum type, int page, int size) {
+		 Pageable pageable = PageRequest.of(page, size);
+
+	        Page<ProductEntity> result =
+	                productRepository.findByCreator(publicId, type, pageable);
+
+	        List<UserProductResponse> items = result.getContent()
+	                .stream()
+	                .map(productMapper::toResponse)
+	                .toList();
+
+	        return ProductPageResponse.builder()
+	                .items(items)
+	                .total(result.getTotalElements())
+	                .build();
 	}
 }
