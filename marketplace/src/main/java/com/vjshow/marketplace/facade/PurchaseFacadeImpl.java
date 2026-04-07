@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.vjshow.marketplace.dto.response.PurchaseItemResponse;
 import com.vjshow.marketplace.entity.OrderEntity;
-import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.OrderStatusEnum;
+import com.vjshow.marketplace.mapper.ProductMapper;
 import com.vjshow.marketplace.service.CloudFlareService;
 import com.vjshow.marketplace.service.OrderService;
 
@@ -20,6 +20,7 @@ public class PurchaseFacadeImpl implements PurchaseFacade {
 
     private final OrderService orderService;
     private final CloudFlareService cloudFlareService;
+    private final ProductMapper productMapper;
 
     @Override
     public List<PurchaseItemResponse> getMyPurchases(Long userId) {
@@ -27,7 +28,7 @@ public class PurchaseFacadeImpl implements PurchaseFacade {
         List<OrderEntity> orders = orderService.getPaidOrders(userId);
 
         return orders.stream()
-                .map(this::mapToResponse)
+                .map(productMapper::mapToResponse)
                 .toList();
     }
 
@@ -42,22 +43,6 @@ public class PurchaseFacadeImpl implements PurchaseFacade {
         return cloudFlareService.generateDownloadUrl(
                 order.getProduct().getFileKey()
         );
-    }
-
-    // ================= PRIVATE =================
-
-    private PurchaseItemResponse mapToResponse(OrderEntity order) {
-        ProductEntity p = order.getProduct();
-
-        return PurchaseItemResponse.builder()
-                .orderId(order.getId())
-                .productId(p.getId())
-                .name(p.getName())
-                .thumbnail(p.getThumbnailUrl())
-                .price(order.getAmount())
-                .purchasedAt(order.getPaidAt())
-                .canDownload(canDownload(order))
-                .build();
     }
 
     private boolean canDownload(OrderEntity order) {
