@@ -69,7 +69,7 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(
 						auth -> auth
-								.requestMatchers("/oauth2/**", "/api/auth/**", "/api/products/**", "/files/**",
+								.requestMatchers("/oauth2/**", "/api/auth/**", "/api/products/**", "/files/**", "/api/creator/**",
 										"/api/webhook/**", "/api/data-deletion").permitAll()
 								.requestMatchers("/api/admin/**").hasRole("ADMIN")
 								.anyRequest().authenticated())
