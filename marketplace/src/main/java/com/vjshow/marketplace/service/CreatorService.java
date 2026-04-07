@@ -1,30 +1,34 @@
 package com.vjshow.marketplace.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.vjshow.marketplace.dto.request.CreatorApplyRequestDTO.CreatorApplyRequest;
+import com.vjshow.marketplace.dto.response.CreatorResponse;
 import com.vjshow.marketplace.entity.CreatorEntity;
 import com.vjshow.marketplace.entity.UserEntity;
 import com.vjshow.marketplace.enums.CreatorStatus;
 
 public interface CreatorService {
-	void apply(UserEntity user, CreatorApplyRequest req);
+	public void apply(UserEntity user, CreatorApplyRequest req);
 
-	List<CreatorEntity> getAll();
+	public List<CreatorEntity> getAll();
 
-	void approve(Long creatorId);
+	public void approve(Long creatorId);
 
-	void reject(Long creatorId);
+	public void reject(Long creatorId);
 
-	CreatorStatus getStatus(UserEntity user);
+	public CreatorStatus getStatus(UserEntity user);
 	
-	List<CreatorEntity> findByStatus(CreatorStatus status);
+	public List<CreatorEntity> findByStatus(CreatorStatus status);
 
-    long countByStatus(CreatorStatus status);
+	public long countByStatus(CreatorStatus status);
 
-	CreatorEntity getByUserId(Long userId);
+    public CreatorEntity getByUserId(Long userId);
 
-    void checkQuota(CreatorEntity creator, Long fileSize);
+	public void checkQuota(CreatorEntity creator, Long fileSize);
 
-    void increaseStorage(CreatorEntity creator, Long fileSize);
+    public void increaseStorage(CreatorEntity creator, Long fileSize);
+    
+    public CreatorResponse getByPublicId(UUID publicId);
 }
