@@ -1,6 +1,7 @@
 package com.vjshow.marketplace.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,65 +23,64 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-	
+
 	private final ProductRepository productRepo;
-    private final OrderRepository orderRepo;
-    private final PaymentRepository paymentRepo;
+	private final OrderRepository orderRepo;
+	private final PaymentRepository paymentRepo;
 
 	@Override
 	public PaymentEntity createNewOrder(Long productId, UserEntity buyer) {
 		ProductEntity product = productRepo.findById(productId)
-                .orElseThrow(() -> new LogicException("NOT_FOUND", "Không tìm thấy sản phẩm"));
-		
-		  // 🔍 tìm order đang pending
-	    Optional<OrderEntity> existing = orderRepo.findTopByBuyerIdAndProductIdOrderByCreatedAtDesc(buyer.getId(), productId);
-	    
-	    if (existing.isPresent()) {
-	    	OrderEntity order = existing.get();
-	    	
-	    	if (order.getStatus() == OrderStatusEnum.PAID) {
-	            throw new LogicException("BUYED", "Bạn đã mua sản phẩm này");
-	        }
-	    	
-	    	if (order.getStatus() == OrderStatusEnum.PENDING) {
-	    		if (order.getPayment() != null) {
-	    	        return order.getPayment();
-	    	    }
-	        }
-	    }
-        
-        
-        // 2. Create payment
-        String paymentId = UUID.randomUUID().toString();
-        String paymentContent = "VJSHOW" + buyer.getId() + System.currentTimeMillis();
+				.orElseThrow(() -> new LogicException("NOT_FOUND", "Không tìm thấy sản phẩm"));
 
-        PaymentEntity payment = new PaymentEntity();
-        payment.setId(paymentId);
-        payment.setAmount(product.getPrice());
-        payment.setContent(paymentContent); 
-        payment.setStatus(PaymentStatusEnum.PENDING);
-        payment.setCreatedAt(LocalDateTime.now());
-        paymentRepo.save(payment);
-        
+		// 🔍 tìm order đang pending
+		Optional<OrderEntity> existing = orderRepo.findTopByBuyerIdAndProductIdOrderByCreatedAtDesc(buyer.getId(),
+				productId);
 
-        // 3. tạo order
-        OrderEntity order = new OrderEntity();
-        order.setBuyer(buyer);
-        order.setCreator(product.getCreator());
-        order.setProduct(product);
+		if (existing.isPresent()) {
+			OrderEntity order = existing.get();
 
-        order.setPayment(payment);
-        order.setAmount(product.getPrice());
+			if (order.getStatus() == OrderStatusEnum.PAID) {
+				throw new LogicException("BUYED", "Bạn đã mua sản phẩm này");
+			}
 
-        long commission = (long) (product.getPrice() * 0.22);
-        order.setCommission(commission);
+			if (order.getStatus() == OrderStatusEnum.PENDING) {
+				if (order.getPayment() != null) {
+					return order.getPayment();
+				}
+			}
+		}
 
-        order.setStatus(OrderStatusEnum.PENDING);
-        order.setPaymentMethod("QRCODE");
-        order.setCreatedAt(LocalDateTime.now());
+		// 2. Create payment
+		String paymentId = UUID.randomUUID().toString();
+		String paymentContent = "VJSHOW" + buyer.getId() + System.currentTimeMillis();
 
-        orderRepo.save(order);
-        return payment;
+		PaymentEntity payment = new PaymentEntity();
+		payment.setId(paymentId);
+		payment.setAmount(product.getPrice());
+		payment.setContent(paymentContent);
+		payment.setStatus(PaymentStatusEnum.PENDING);
+		payment.setCreatedAt(LocalDateTime.now());
+		paymentRepo.save(payment);
+
+		// 3. tạo order
+		OrderEntity order = new OrderEntity();
+		order.setBuyer(buyer);
+		order.setCreator(product.getCreator());
+		order.setProduct(product);
+
+		order.setPayment(payment);
+		order.setAmount(product.getPrice());
+
+		long commission = (long) (product.getPrice() * 0.22);
+		order.setCommission(commission);
+
+		order.setStatus(OrderStatusEnum.PENDING);
+		order.setPaymentMethod("QRCODE");
+		order.setCreatedAt(LocalDateTime.now());
+
+		orderRepo.save(order);
+		return payment;
 	}
 
 	@Override
@@ -91,9 +91,25 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void markPaid(OrderEntity order) {
-        order.setStatus(OrderStatusEnum.PAID);
-        order.setPaidAt(LocalDateTime.now());
+		order.setStatus(OrderStatusEnum.PAID);
+		order.setPaidAt(LocalDateTime.now());
+		
+		// 👉 set expire download nếu chưa có mặc định 3 ngày
+        if (order.getDownloadExpiredAt() == null) {
+            order.setDownloadExpiredAt(LocalDateTime.now().plusDays(3));
+        }
+		
 		orderRepo.save(order);
+	}
+
+	@Override
+	public List<OrderEntity> getPaidOrders(Long userId) {
+		return orderRepo.findByBuyerIdAndStatus(userId, OrderStatusEnum.PAID);
+	}
+
+	@Override
+	public OrderEntity getOrderById(Long id) {
+		return orderRepo.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
 	}
 
 }
