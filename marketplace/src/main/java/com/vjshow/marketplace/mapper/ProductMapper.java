@@ -3,8 +3,10 @@ package com.vjshow.marketplace.mapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.vjshow.marketplace.dto.response.OwnerResponse;
 import com.vjshow.marketplace.dto.response.UserProductResponse;
 import com.vjshow.marketplace.entity.ProductEntity;
+import com.vjshow.marketplace.entity.UserEntity;
 
 @Component
 public class ProductMapper {
@@ -14,6 +16,14 @@ public class ProductMapper {
 
 	public UserProductResponse toResponse(ProductEntity p) {
 		UserProductResponse res = new UserProductResponse();
+		
+		UserEntity user = p.getCreator().getUser(); // tuỳ cấu trúc của bạn
+		OwnerResponse owner = OwnerResponse.builder()
+	            .id(user.getId())
+	            .publicId(user.getPublicId())
+	            .name(user.getName())
+	            .picture(user.getPicture())
+	            .build();
 
 		res.setId(p.getId());
 		res.setName(p.getName());
@@ -42,6 +52,8 @@ public class ProductMapper {
 		if (p.getSize() != null) {
 			res.setSizeText(formatSize(p.getSize()));
 		}
+		
+		res.setOwner(owner);
 
 		return res;
 	}

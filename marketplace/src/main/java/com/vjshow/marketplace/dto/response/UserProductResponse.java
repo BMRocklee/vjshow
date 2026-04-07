@@ -43,4 +43,7 @@ public class UserProductResponse {
     // 🔥 tiện cho UI
     private String resolution; // "1920x1080"
     private String sizeText;   // "2.3 MB"
+    
+ // 🔥 owner
+    private OwnerResponse owner;
 }
