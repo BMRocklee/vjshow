@@ -1,11 +1,13 @@
 package com.vjshow.marketplace.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 
 import com.vjshow.marketplace.dto.request.CompleteUploadRequest;
 import com.vjshow.marketplace.dto.request.ProductRequest;
+import com.vjshow.marketplace.dto.response.ProductPageResponse;
 import com.vjshow.marketplace.entity.CreatorEntity;
 import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
@@ -27,5 +29,8 @@ public interface ProductService {
 	public List<ProductEntity> getTopProducts(ProductTypeEnum type);
 	
 	public List<ProductEntity> getTopProducts(ProductTypeEnum type, Long quantity);
+	
+	public ProductPageResponse getByCreator(UUID publicId, ProductTypeEnum type, int page, int size);
+
 
 }
