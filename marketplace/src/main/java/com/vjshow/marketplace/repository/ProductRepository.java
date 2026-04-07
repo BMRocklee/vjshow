@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -51,4 +52,12 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 		    AND p.status = 'ACTIVE'
 		""")
 		long sumRevenueByCreator(@Param("creatorId") Long creatorId);
+	
+	@Modifying
+	@Query("""
+	    UPDATE ProductEntity p 
+	    SET p.totalSales = COALESCE(p.totalSales, 0) + 1 
+	    WHERE p.id = :id
+	""")
+	void incrementSales(@Param("id") Long id);
 }
