@@ -1,5 +1,6 @@
 package com.vjshow.marketplace.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.vjshow.marketplace.entity.OrderEntity;
@@ -12,4 +13,8 @@ public interface OrderService {
 	Optional<OrderEntity> findPending(Long buyerId, Long productId);
 
     void markPaid(OrderEntity order);
+    
+    List<OrderEntity> getPaidOrders(Long userId);
+
+    OrderEntity getOrderById(Long id);
 }
