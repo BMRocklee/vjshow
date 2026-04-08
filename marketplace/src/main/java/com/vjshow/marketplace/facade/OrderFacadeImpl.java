@@ -24,7 +24,8 @@ public class OrderFacadeImpl implements OrderFacade {
 		PaymentEntity payment = orderService.createNewOrder(productId, buyer);
 
 		// 2. generate QR
-		String qr = paymentGateway.generateQr(payment);
+//		String qr = paymentGateway.generateCassoQr(payment);
+		String qr = paymentGateway.generatePayOsQR(payment);
 
 		// 3. response
 		return new CreatePaymentResponse(payment.getId(), qr, payment.getAmount());

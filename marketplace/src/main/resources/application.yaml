@@ -66,3 +66,7 @@ logging:
      org.hibernate.SQL: DEBUG
      org.hibernate.orm.jdbc.bind: TRACE
      org.springframework.orm.jpa: DEBUG
+payOs:
+ client-id: e3e18fc4-4a29-4eda-8050-b94d9de27bcc
+ api-key: 7ea8eee1-00d8-4e78-a411-cb5c00a3008c
+ checksum-key: 91ae3349cebc6126f7337a984b40178f448507c16b33e0b08dae615efdde572a
