@@ -12,7 +12,6 @@ import com.vjshow.marketplace.enums.PaymentStatusEnum;
 import com.vjshow.marketplace.exception.LogicException;
 import com.vjshow.marketplace.repository.OrderRepository;
 import com.vjshow.marketplace.repository.PaymentRepository;
-import com.vjshow.marketplace.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 

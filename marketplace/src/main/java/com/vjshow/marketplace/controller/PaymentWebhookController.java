@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vjshow.marketplace.dto.request.CassoWebhookDto;
+import com.vjshow.marketplace.dto.response.PayOSWebhookDto;
 import com.vjshow.marketplace.service.WebhookService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,18 @@ import lombok.RequiredArgsConstructor;
 public class PaymentWebhookController {
 	
 	private final WebhookService webhookService;
-
+	
 	@PostMapping("/casso")
 	public ResponseEntity<?> handleCasso(@RequestBody CassoWebhookDto cassoDto) {
 		webhookService.handleCasso(cassoDto);
 		return ResponseEntity.ok().build();
 	}
+	
+	
+	@PostMapping("/payos")
+    public ResponseEntity<?> handlePayOS(@RequestBody PayOSWebhookDto body) {
+		webhookService.handlePayOS(body);
+		return ResponseEntity.ok().build();
+    }
+	
 }
