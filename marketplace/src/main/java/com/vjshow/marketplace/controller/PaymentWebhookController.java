@@ -1,5 +1,7 @@
 package com.vjshow.marketplace.controller;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,10 +19,23 @@ import lombok.RequiredArgsConstructor;
 public class PaymentWebhookController {
 	
 	private final WebhookService webhookService;
-
+	
 	@PostMapping("/casso")
 	public ResponseEntity<?> handleCasso(@RequestBody CassoWebhookDto cassoDto) {
 		webhookService.handleCasso(cassoDto);
 		return ResponseEntity.ok().build();
 	}
+	
+	
+	@PostMapping("/payos")
+    public ResponseEntity<?> handlePayOS(@RequestBody Map<String, Object> body) {
+
+        try {
+            return ResponseEntity.ok("OK");
+
+        } catch (Exception e) {
+            return ResponseEntity.ok("ERROR");
+        }
+    }
+	
 }
