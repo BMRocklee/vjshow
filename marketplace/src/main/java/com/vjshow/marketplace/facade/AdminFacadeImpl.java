@@ -74,7 +74,7 @@ public class AdminFacadeImpl implements AdminFacade {
 
 		        return CreatorAdminResponseDTO.builder()
 		                .id(creator.getId())
-		                .username(user.getName())
+		                .username(creator.getName())
 		                .avatar(user.getPicture())
 		                .uid(user.getPublicId().toString())
 		                .phone(creator.getPhone())
