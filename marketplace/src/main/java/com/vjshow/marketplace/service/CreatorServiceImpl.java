@@ -32,7 +32,7 @@ public class CreatorServiceImpl implements CreatorService {
 		}
 
 		// TODO Auto-generated method stub
-		CreatorEntity newCreator = CreatorEntity.builder().name(req.name()).email(req.email()).phone(req.phone()).type(req.type())
+		CreatorEntity newCreator = CreatorEntity.builder().name(req.name()).email(req.email()).facebook(req.facebook()).phone(req.phone()).type(req.type())
 				.company(req.company()).user(user).status(CreatorStatus.PENDING).createdAt(LocalDateTime.now()).build();
 
 		creatorRepository.save(newCreator);
@@ -101,6 +101,12 @@ public class CreatorServiceImpl implements CreatorService {
 	    @Override
 	    public void increaseStorage(CreatorEntity creator, Long fileSize) {
 	        creator.setUsedStorage(creator.getUsedStorage() + fileSize);
+	        creatorRepository.save(creator);
+	    }
+	    
+	    @Override
+	    public void decreaseStorage(CreatorEntity creator, Long fileSize) {
+	        creator.setUsedStorage(creator.getUsedStorage() - fileSize);
 	        creatorRepository.save(creator);
 	    }
 
