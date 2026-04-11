@@ -28,11 +28,9 @@ public class ProductController {
 	private final ProductFacade productFacade;
 
 	@GetMapping
-	public ResponseEntity<?> getProducts(
-			@RequestParam(required = false) String type,
+	public ResponseEntity<?> getProducts(@RequestParam(required = false) String type,
 			@RequestParam(required = false, defaultValue = "") String keyword,
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "12") int size) {
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
 
 		Page<UserProductResponse> data = productFacade.getPublicProducts(type, keyword, page, size);
 		Map<String, Object> res = new HashMap<>();
@@ -49,12 +47,19 @@ public class ProductController {
 	}
 
 	@PostMapping("/done")
-	public void done(@RequestBody HandleFileDoneRequest fileInfo) {
-		productFacade.markDone(fileInfo);
+	public ResponseEntity<?> done(@RequestBody HandleFileDoneRequest fileInfo) {
+		boolean status = productFacade.markDone(fileInfo);
+		if (status) {
+			return ResponseEntity.ok().build();
+		} else {
+			return ResponseEntity.badRequest().body("file upload đã tồn tại!");
+		}
 	}
 
 	@GetMapping("/getTop")
-	public ResponseEntity<?> getTopProducts(@RequestParam ProductTypeEnum type, @RequestParam Long quantity) {
-		return ResponseEntity.ok(productFacade.getTopProducts(type, quantity));
+	public ResponseEntity<?> getTopProducts(@RequestParam ProductTypeEnum type,
+			@RequestParam(defaultValue = "0") int page, 
+			@RequestParam(defaultValue = "5") int size) {
+		return ResponseEntity.ok(productFacade.getTopProducts(type, page, size));
 	}
 }
