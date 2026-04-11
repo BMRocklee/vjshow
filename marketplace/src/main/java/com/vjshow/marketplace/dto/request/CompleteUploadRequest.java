@@ -11,20 +11,20 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CompleteUploadRequest {
 
-	private String key;
+	private String fileKey; 
 
 	private Long fileSize;
-
-	private String name;
-
-	private String type;
-
-	private String description;
-
-	private Long price;
-
-	// 🔥 optional (nên có)
-	private String contentType;
 	
+	// ===== PREVIEW =====
+    private String previewKey;   // ảnh preview (nullable)
+
+    // ===== META =====
+	private String name;
+	private String type;
+    private String imageMode;    // NORMAL / SELL_FILE (nullable)
+    private String description;
+    private Long price;
+
+	private String contentType;
 	private Long duration;
 }
