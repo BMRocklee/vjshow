@@ -1,10 +1,9 @@
 package com.vjshow.marketplace.facade;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 
 import com.vjshow.marketplace.dto.request.HandleFileDoneRequest;
+import com.vjshow.marketplace.dto.response.PageResponse;
 import com.vjshow.marketplace.dto.response.UserProductResponse;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
 
@@ -13,7 +12,7 @@ public interface ProductFacade {
 	
 	public UserProductResponse getById(Long id);
 	
-	void markDone(HandleFileDoneRequest request);
+	public boolean markDone(HandleFileDoneRequest request);
 
-	public List<UserProductResponse> getTopProducts(ProductTypeEnum type, Long quantity);
+	public PageResponse<UserProductResponse> getTopProducts(ProductTypeEnum type, int page, int size);
 }
