@@ -11,6 +11,7 @@ import com.vjshow.marketplace.dto.request.CompleteUploadRequest;
 import com.vjshow.marketplace.dto.response.UploadResponse;
 import com.vjshow.marketplace.entity.CreatorEntity;
 import com.vjshow.marketplace.entity.ProductEntity;
+import com.vjshow.marketplace.enums.ProductTypeEnum;
 import com.vjshow.marketplace.service.CloudFlareService;
 import com.vjshow.marketplace.service.CreatorService;
 import com.vjshow.marketplace.service.ProductService;
@@ -57,16 +58,31 @@ public class UploadFacadeImpl implements UploadFacade{
 	        creatorService.increaseStorage(creator, request.getFileSize());
 	        
 	        TransactionSynchronizationManager.registerSynchronization(
-	                new TransactionSynchronization() {
-	                    @Override
-	                    public void afterCommit() {
-	                        workerService.sendJob(
-	                            product.getFileKey(),
-	                            product.getType().name()
-	                        );
-	                    }
-	                }
-	            );
+	        	    new TransactionSynchronization() {
+	        	        @Override
+	        	        public void afterCommit() {
+	        	        	String productType = product.getType().name();
+	        	            String handleFile = product.getFileKey();
+
+	        	            // IMAGE SELL_FILE hoặc FILE → xử lý preview
+	        	            if (product.getType() == ProductTypeEnum.DESIGN
+	        	                || "SELL_FILE".equals(request.getImageMode())) {
+	        	            	productType = ProductTypeEnum.IMAGE.name();
+	        	                if (product.getPreviewUrl() != null) {
+	        	                    handleFile = product.getPreviewUrl();
+	        	                }
+	        	            }
+
+	        	            // ✅ tránh gửi job rác
+	        	            if (handleFile != null) {
+	        	                workerService.sendJob(
+	        	                    handleFile,
+	        	                    productType
+	        	                );
+	        	            }
+	        	        }
+	        	    }
+	        	);
 
 	        return product;
 	    }
