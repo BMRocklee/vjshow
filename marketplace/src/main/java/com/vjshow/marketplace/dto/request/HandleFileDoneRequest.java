@@ -21,4 +21,6 @@ public class HandleFileDoneRequest {
     private String format;
 
     private Long size;
+    
+    private String hash;
 }
