@@ -1,6 +1,7 @@
 package com.vjshow.marketplace.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -9,30 +10,42 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.vjshow.marketplace.entity.ProductEntity;
 import com.vjshow.marketplace.enums.ProductStatusEnum;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
 
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
+	
+	@Query("""
+			    SELECT p FROM ProductEntity p
+			    WHERE (p.fileKey = :key OR p.previewUrl = :key)
+			      AND p.deletedFlag = false
+			""")
+	ProductEntity findByAnyKey(@Param("key") String key);
 
-	ProductEntity findByFileKey(String fileKey);
+	List<ProductEntity> findByNameContainingIgnoreCaseAndDeletedFlagFalse(String keyword);
 
-	List<ProductEntity> findByNameContainingIgnoreCase(String keyword);
+	List<ProductEntity> findByTypeAndNameContainingIgnoreCaseAndDeletedFlagFalse(ProductTypeEnum valueOf, String keyword);
 
-	List<ProductEntity> findByTypeAndNameContainingIgnoreCase(ProductTypeEnum valueOf, String keyword);
-
-	Page<ProductEntity> findByStatusAndNameContainingIgnoreCase(ProductStatusEnum status, String name,
+	Page<ProductEntity> findByStatusAndNameContainingIgnoreCaseAndDeletedFlagFalse(ProductStatusEnum status, String name,
 			Pageable pageable);
 
-	Page<ProductEntity> findByStatusAndTypeAndNameContainingIgnoreCase(ProductStatusEnum status, ProductTypeEnum type,
+	Page<ProductEntity> findByStatusAndTypeAndNameContainingIgnoreCaseAndDeletedFlagFalse(ProductStatusEnum status, ProductTypeEnum type,
 			String name, Pageable pageable);
 
-	List<ProductEntity> findByCreatorIdOrderByCreatedAtDesc(Long creatorId);
+	List<ProductEntity> findByCreatorIdAndDeletedFlagFalseOrderByCreatedAtDesc(Long creatorId);
 
-	List<ProductEntity> findTop5ByTypeOrderByTotalSalesDesc(ProductTypeEnum type);
+	List<ProductEntity> findTop5ByTypeAndDeletedFlagFalseOrderByTotalSalesDesc(ProductTypeEnum type);
+	
+	Optional<ProductEntity> findByHashAndDeletedFlagFalse(String hash);
 
-	List<ProductEntity> findByTypeOrderByTotalSalesDesc(ProductTypeEnum type, Pageable pageable);
+	Page<ProductEntity> findByTypeAndStatusAndDeletedFlagFalseOrderByTotalSalesDesc(
+		    ProductTypeEnum type,
+		    ProductStatusEnum status,
+		    Pageable pageable
+		);
 
 	@Query("""
 		    SELECT p FROM ProductEntity p
@@ -49,10 +62,11 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 		    SELECT COALESCE(SUM(p.price * p.totalSales), 0)
 		    FROM ProductEntity p
 		    WHERE p.creator.id = :creatorId
-		    AND p.status = 'ACTIVE'
+		    AND p.deletedFlag = false
 		""")
 		long sumRevenueByCreator(@Param("creatorId") Long creatorId);
 	
+	@Transactional
 	@Modifying
 	@Query("""
 	    UPDATE ProductEntity p 
