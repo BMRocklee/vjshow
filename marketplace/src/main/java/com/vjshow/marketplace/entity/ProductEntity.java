@@ -2,6 +2,9 @@ package com.vjshow.marketplace.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.SQLDelete;
+
+import com.vjshow.marketplace.enums.FileFormatEnum;
 import com.vjshow.marketplace.enums.ProductStatusEnum;
 import com.vjshow.marketplace.enums.ProductTypeEnum;
 
@@ -30,6 +33,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE products SET deleted_flag = true WHERE id = ?")
 public class ProductEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,11 +83,19 @@ public class ProductEntity {
 	
 	private String format;
 	
+	private String hash;
+	
+	private FileFormatEnum originalFileFormat; // ai, psd, png...
+	
 	private Long size;
+	
+	@Column(nullable = false)
+	private Boolean deletedFlag;
 	
 	@PrePersist
 	public void prePersist() {
 	    createdAt = LocalDateTime.now();
 	    totalSales = 0l;
+	    deletedFlag = false;
 	}
 }
