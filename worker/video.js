@@ -10,6 +10,7 @@ import sharp from "sharp";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import crypto from "crypto"; // ✅ ADD HASH
 
 // =====================
 // 🔥 CONFIG
@@ -37,14 +38,25 @@ const log = (msg) => {
 };
 
 // =====================
-// 🔥 STREAM → FILE
+// 🔥 STREAM → FILE (+ HASH)
 // =====================
 const streamToFile = (stream, filePath) =>
   new Promise((resolve, reject) => {
     const write = fs.createWriteStream(filePath);
+    const hash = crypto.createHash("sha256"); // ✅
+
+    stream.on("data", (chunk) => {
+      hash.update(chunk); // ✅ update hash
+    });
+
     stream.pipe(write);
+
     stream.on("error", reject);
-    write.on("finish", resolve);
+
+    write.on("finish", () => {
+      const digest = hash.digest("hex"); // ✅ final hash
+      resolve(digest); // ✅ return hash
+    });
   });
 
 // =====================
@@ -87,7 +99,7 @@ const runFFmpeg = (args, label = "") =>
         reject(new Error(`FFmpeg timeout: ${label}`));
       },
       90 * 60 * 1000
-    ); // 15 phút
+    );
 
     ff.on("close", (code) => {
       clearTimeout(timeout);
@@ -183,14 +195,15 @@ export const processVideo = async ({ key }) => {
     log(`🎬 START processing: ${key}`);
 
     // =====================
-    // DOWNLOAD
+    // DOWNLOAD (+ HASH)
     // =====================
     log("⬇️ Downloading video...");
     const object = await s3.send(
       new GetObjectCommand({ Bucket: BUCKET, Key: key })
     );
-    await streamToFile(object.Body, input);
-    log(`✅ Downloaded: ${input}`);
+
+    const hash = await streamToFile(object.Body, input); // ✅
+    log(`🔑 HASH: ${hash}`);
 
     // =====================
     // METADATA
@@ -205,7 +218,7 @@ export const processVideo = async ({ key }) => {
     await sharp(Buffer.from(svg)).png().toFile(wmImage);
 
     // =====================
-    // PREVIEW
+    // PREVIEW (720p HD)
     // =====================
     await runFFmpeg(
       [
@@ -216,7 +229,7 @@ export const processVideo = async ({ key }) => {
         "-t",
         "10",
         "-filter_complex",
-        "[0:v]scale=iw*0.5:ih*0.5[v0];[v0][1:v]overlay=0:0",
+        "[0:v]scale=-2:720[v0];[v0][1:v]overlay=0:0", // ✅ HD
         "-c:v",
         "libx264",
         "-preset",
@@ -289,7 +302,7 @@ export const processVideo = async ({ key }) => {
     await uploadToR2(thumbKey, thumb, "image/jpeg");
 
     // =====================
-    // HLS
+    // HLS (MAX 2K)
     // =====================
     log("📺 Generating HLS...");
     fs.mkdirSync(hlsDir);
@@ -298,6 +311,8 @@ export const processVideo = async ({ key }) => {
       [
         "-i",
         full,
+        "-vf",
+        "scale='min(2048,iw)':-2", // ✅ max 2K
         "-preset",
         "ultrafast",
         "-g",
@@ -353,7 +368,8 @@ export const processVideo = async ({ key }) => {
       hlsUrl: hlsKey,
       width,
       height,
-      duration
+      duration,
+      hash // ✅ thêm
     };
   } catch (err) {
     log(`❌ ERROR: ${err.message}`);
