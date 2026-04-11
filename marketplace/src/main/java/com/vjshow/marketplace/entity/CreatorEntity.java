@@ -47,6 +47,8 @@ public class CreatorEntity {
 	private String type;
 
 	private String company;
+	
+	private String facebook;
 
 	private Long uploadLimit;
 
