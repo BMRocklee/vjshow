@@ -7,6 +7,7 @@ public class CreatorApplyRequestDTO {
 	        String email,
 	        String phone,
 	        String type,
+	        String facebook,
 	        String company
 	) {}
 }
