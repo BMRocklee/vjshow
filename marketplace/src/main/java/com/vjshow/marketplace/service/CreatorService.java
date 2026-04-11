@@ -30,5 +30,7 @@ public interface CreatorService {
 
     public void increaseStorage(CreatorEntity creator, Long fileSize);
     
+    public void decreaseStorage(CreatorEntity creator, Long fileSize);
+    
     public CreatorResponse getByPublicId(UUID publicId);
 }
